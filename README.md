@@ -38,13 +38,12 @@ A separate 20-module mosque and foundation website.
 - Public module pages load published text content from Appwrite.
 - Setup guide: [APPWRITE_SETUP_BN.md](APPWRITE_SETUP_BN.md).
 
-## Not yet connected / not yet verified
+## Appwrite setup status
 
-- A new Appwrite Project, Database, Table, and Admin Team must first be created in the Appwrite Console.
-- The new Project ID, Database ID, and Team ID must be entered in `appwrite-config.js`.
-- The website hosting URL must be added as an Appwrite Web platform.
-- Appwrite permissions must be configured exactly as described in the setup guide.
+- The separate Appwrite Project, Database, Table, columns, Admin Team, admin membership, table permissions, and public client configuration have been created.
+- The remaining Console step is to add the GitHub Pages hostname `itdaynamic96-hub.github.io` as a Web platform.
 - No real prayer times, historical facts, contact details, or other factual mosque content have been invented.
+- See [APPWRITE_SETUP_BN.md](APPWRITE_SETUP_BN.md) for the current state and the one remaining Console step.
 - Photo/video upload, aid application forms, scholarship workflow, donation/payment processing, accounting, and fine-grained staff roles are not included in this first admin editor.
 
 ## Security notes
