@@ -53,6 +53,7 @@ async function uploadImages(n,data){
  if(!cfg.storageBucketId)throw new Error("ছবি আপলোডের Storage Bucket ID কনফিগার করা হয়নি। সেটআপ নির্দেশনা অনুসরণ করুন।");
  for(const f of activeSchema.filter(x=>x.type==="image")){
   const input=$("field-"+f.key),existing=JSON.parse(input.dataset.existing||"[]"),files=[...(input.files||[])];
+  if(files.length&&!cfg.storageBucketId)throw new Error("ছবি আপলোডের Storage Bucket ID কনফিগার করা হয়নি। সেটআপ নির্দেশনা অনুসরণ করুন।");
   const uploaded=[];
   for(const file of files){if(!file.type.startsWith("image/"))throw new Error("শুধু ছবি আপলোড করা যাবে: "+file.name);if(file.size>8*1024*1024)throw new Error("প্রতিটি ছবির সর্বোচ্চ আকার ৮ MB: "+file.name);
    const result=await storage.createFile({bucketId:cfg.storageBucketId,fileId:sdk.ID.unique(),file,permissions:[sdk.Permission.read(sdk.Role.any())]});
