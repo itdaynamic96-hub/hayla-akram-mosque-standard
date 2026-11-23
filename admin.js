@@ -1,66 +1,129 @@
 const cfg=window.MOSQUE_APPWRITE_CONFIG||{};
-const modules=["হোমপেজ","মসজিদের পরিচিতি","মসজিদের ইতিহাস","নামাজের সময়সূচি","আজানের সময়সূচি","জুমার নামাজের সময়","ইমাম ও খতিব পরিচিতি","পরিচালনা কমিটি","নোটিশ বোর্ড","অনুষ্ঠানসূচি","ফটো গ্যালারি","ভিডিও গ্যালারি","জুমার খুতবা আর্কাইভ","ফাউন্ডেশন পরিচিতি","লক্ষ্য ও উদ্দেশ্য","দরিদ্র পরিবার সহায়তা","এতিম সহায়তা","শিক্ষাবৃত্তি ব্যবস্থাপনা","চিকিৎসা সহায়তা","দুর্যোগ ও ত্রাণ কার্যক্রম"];
+const MODULES=[
+"হোমপেজ","মসজিদের পরিচিতি","মসজিদের ইতিহাস","নামাজের সময়সূচি","আজানের সময়সূচি","জুমার নামাজের সময়","ইমাম ও খতিব পরিচিতি","পরিচালনা কমিটি","নোটিশ বোর্ড","অনুষ্ঠানসূচি","ফটো গ্যালারি","ভিডিও গ্যালারি","জুমার খুতবা আর্কাইভ","ফাউন্ডেশন পরিচিতি","লক্ষ্য ও উদ্দেশ্য","দরিদ্র পরিবার সহায়তা","এতিম সহায়তা","শিক্ষাবৃত্তি ব্যবস্থাপনা","চিকিৎসা সহায়তা","দুর্যোগ ও ত্রাণ কার্যক্রম"
+];
 const $=id=>document.getElementById(id);
-function status(msg,error=false){const el=$("status");if(!el)return;el.textContent=msg;el.classList.toggle("error",error);}
-function ready(){return !!(cfg.endpoint&&cfg.projectId&&cfg.databaseId&&cfg.tableId&&cfg.adminTeamId);}
+const fields=[
+ ["summary","সংক্ষিপ্ত পরিচিতি","textarea"],["details","বিস্তারিত তথ্য","textarea"],
+ ["date","তারিখ","text"],["time","সময়","text"],["location","স্থান/ঠিকানা","text"],
+ ["responsible","দায়িত্বশীল ব্যক্তি/কমিটি","text"],["eligibility","যোগ্যতা/শর্ত","textarea"],
+ ["process","আবেদন/অংশগ্রহণের নিয়ম","textarea"],["contact","যোগাযোগের তথ্য","text"],
+ ["media","ছবি/ভিডিও/বাহ্যিক লিংক (প্রতি লাইনে একটি)","textarea"]
+];
+let sdk,account,teams,tables,currentUser=null,rows=new Map(),loadedContent={};
+function status(message,error=false){const el=$("status");el.textContent=message;el.classList.toggle("error",error);}
 function rowId(n){return "module-"+String(n).padStart(2,"0");}
-async function start(){
- if(!ready()){status("Appwrite কনফিগারেশন অসম্পূর্ণ। appwrite-config.js ফাইলের Project ID, Database ID, Table ID ও Admin Team ID পরীক্ষা করুন।",true);return;}
- status("Appwrite লগইন ব্যবস্থা লোড হচ্ছে...");
- let sdk;
- try{sdk=await import("https://cdn.jsdelivr.net/npm/appwrite@17.0.0/+esm");}
- catch(e){status("Appwrite লাইব্রেরি লোড হয়নি। ইন্টারনেট বা CDN সংযোগ পরীক্ষা করুন। বিস্তারিত: "+(e.message||String(e)),true);return;}
+function parseContent(raw){
+ if(!raw)return {};
+ try{const x=JSON.parse(raw);if(x&&typeof x==="object"&&!Array.isArray(x))return x;}catch{}
+ return {details:raw};
+}
+function renderFields(data={}){
+ const host=$("moduleFields");host.replaceChildren();
+ for(const [key,label,type] of fields){
+  const wrap=document.createElement("div");wrap.className="field";
+  const lab=document.createElement("label");lab.htmlFor="field-"+key;lab.textContent=label;
+  const input=document.createElement(type==="textarea"?"textarea":"input");
+  input.id="field-"+key;input.name=key;input.value=data[key]||"";
+  if(type==="textarea"){input.rows=key==="media"?4:5;input.maxLength=key==="details"?10000:4000;}
+  else input.maxLength=300;
+  wrap.append(lab,input);host.append(wrap);
+ }
+}
+function readFields(){
+ const data={};
+ for(const [key] of fields)data[key]=$("field-"+key).value.trim();
+ return data;
+}
+function showEditor(show){
+ $("loginPanel").classList.toggle("hidden",show);
+ $("editorPanel").classList.toggle("hidden",!show);
+}
+function setCounters(){
+ const published=[...rows.values()].filter(x=>x.published).length;
+ $("publishedCount").textContent=published;
+ $("draftCount").textContent=Math.max(0,20-published);
+ $("savedCount").textContent=rows.size;
+}
+async function requireAdmin(){
+ currentUser=await account.get();
+ const result=await teams.listMemberships({teamId:cfg.adminTeamId});
+ const membership=(result.memberships||[]).find(m=>m.userId===currentUser.$id&&m.confirm===true);
+ if(!membership)throw new Error("এই অ্যাকাউন্টটি Mosque 20 Admins টিমের নিশ্চিত সদস্য নয়।");
+ showEditor(true);
+ $("welcome").textContent="স্বাগতম, "+(currentUser.name||currentUser.email);
+ await loadAllRows();
+ await loadSelected();
+}
+async function loadAllRows(){
+ rows.clear();
+ await Promise.all(MODULES.map(async(_,i)=>{
+  const id=rowId(i+1);
+  try{const row=await tables.getRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:id});rows.set(id,row);}catch(e){if(e.code!==404)console.warn("Module read",id,e);}
+ }));
+ setCounters();
+}
+async function loadSelected(){
+ const n=Number($("moduleSelect").value||1),id=rowId(n);
+ $("moduleNumber").textContent=MODULES[n-1];
+ $("moduleStatus").textContent="তথ্য লোড হচ্ছে…";
  try{
+  const row=await tables.getRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:id});
+  rows.set(id,row);const content=parseContent(row.content);
+  $("contentTitle").value=row.title||MODULES[n-1];
+  renderFields(content);$("published").checked=!!row.published;
+  $("moduleStatus").textContent=row.published?"প্রকাশিত":"খসড়া / এখনো প্রকাশিত নয়";
+ }catch(e){
+  if(e.code===404){
+   rows.delete(id);$("contentTitle").value=MODULES[n-1];renderFields({});
+   $("published").checked=false;$("moduleStatus").textContent="এখনো তথ্য সংরক্ষণ করা হয়নি।";
+  }else throw e;
+ }
+ setCounters();
+}
+function friendlyError(e){
+ const code=e?.code?(" ("+e.code+")"):"";
+ if(e?.code===401)return "লগইন সেশন শেষ হয়েছে অথবা ইমেইল/পাসওয়ার্ড সঠিক নয়। আবার লগইন করুন।";
+ if(e?.code===403)return "অনুমতি নেই। Appwrite Table-এ Mosque 20 Admins Team-এর Create/Read/Update permission পরীক্ষা করুন।";
+ if(e?.code===404)return "Appwrite-এ প্রয়োজনীয় Table/Row পাওয়া যায়নি। Project, Database ও Table ID পরীক্ষা করুন।";
+ return (e?.message||String(e))+code;
+}
+async function start(){
+ if(!cfg.endpoint||!cfg.projectId||!cfg.databaseId||!cfg.tableId||!cfg.adminTeamId){status("Appwrite কনফিগারেশন অসম্পূর্ণ।",true);return;}
+ status("নিরাপদ প্রশাসনিক সংযোগ প্রস্তুত হচ্ছে…");
+ try{
+  sdk=await import("https://cdn.jsdelivr.net/npm/appwrite@29.2.0/+esm");
   const {Client,Account,Teams,TablesDB}=sdk;
+  if(!TablesDB)throw new Error("এই SDK-তে TablesDB পাওয়া যায়নি। SDK সংস্করণ পরীক্ষা করুন।");
   const client=new Client().setEndpoint(cfg.endpoint).setProject(cfg.projectId);
-  const account=new Account(client),teams=new Teams(client),tables=new TablesDB(client);
-  let currentUser=null,rowsById=new Map();
-  async function requireAdmin(){
-   currentUser=await account.get();
-   const memberships=await teams.listMemberships({teamId:cfg.adminTeamId});
-   const isMember=(memberships.memberships||[]).some(m=>m.userId===currentUser.$id&&m.confirm===true);
-   if(!isMember)throw new Error("এই অ্যাকাউন্টটি Mosque 20 Admins টিমের নিশ্চিত সদস্য নয়। Appwrite Console-এ Team membership পরীক্ষা করুন।");
-   $("loginPanel").classList.add("hidden");$("editorPanel").classList.remove("hidden");
-   $("welcome").textContent="স্বাগতম, "+(currentUser.name||currentUser.email);
-   await loadSelected();
-  }
-  async function loadSelected(){
-   const n=Number($("moduleSelect").value),id=rowId(n);
-   try{
-    const row=await tables.getRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:id});
-    rowsById.set(id,row);$("contentTitle").value=row.title||modules[n-1];$("contentBody").value=row.content||"";$("published").checked=!!row.published;
-    status("তথ্য পাওয়া গেছে। সম্পাদনা করে সংরক্ষণ করতে পারেন।");
-   }catch(e){
-    if(e.code===404){rowsById.delete(id);$("contentTitle").value=modules[n-1];$("contentBody").value="";$("published").checked=false;status("এই মডিউলের তথ্য এখনো সংরক্ষিত হয়নি। নতুন তথ্য লিখুন।");}
-    else status("তথ্য লোড হয়নি: "+(e.message||String(e)),true);
-   }
-  }
-  $("moduleSelect").innerHTML=modules.map((m,i)=>'<option value="'+(i+1)+'">'+String(i+1).padStart(2,"0")+". "+m+"</option>").join("");
+  account=new Account(client);teams=new Teams(client);tables=new TablesDB(client);
+  $("moduleSelect").innerHTML=MODULES.map((m,i)=>'<option value="'+(i+1)+'">'+m+'</option>').join("");
+  $("moduleSelect").addEventListener("change",()=>loadSelected().catch(e=>status("তথ্য লোড হয়নি: "+friendlyError(e),true)));
   $("loginForm").addEventListener("submit",async e=>{
-   e.preventDefault();const submit=$("loginForm").querySelector('button[type="submit"]');submit.disabled=true;status("লগইন যাচাই করা হচ্ছে...");
-   try{await account.createEmailPasswordSession({email:$("email").value.trim(),password:$("password").value});await requireAdmin();}
-   catch(err){status("লগইন ব্যর্থ: "+(err.message||String(err)),true);}
-   finally{submit.disabled=false;}
+   e.preventDefault();const btn=$("loginBtn");btn.disabled=true;status("লগইন যাচাই হচ্ছে…");
+   try{await account.createEmailPasswordSession({email:$("email").value.trim(),password:$("password").value});await requireAdmin();status("প্রশাসনিক প্যানেল চালু হয়েছে।");}
+   catch(err){status("লগইন ব্যর্থ: "+friendlyError(err),true);}
+   finally{btn.disabled=false;}
   });
-  $("moduleSelect").addEventListener("change",loadSelected);
-  $("saveBtn").addEventListener("click",async()=>{
-   const n=Number($("moduleSelect").value),id=rowId(n),data={moduleId:n,title:$("contentTitle").value.trim(),content:$("contentBody").value.trim(),published:$("published").checked};
-   if(!data.title){status("শিরোনাম লিখুন।",true);return;}
-   $("saveBtn").disabled=true;
+  $("contentForm").addEventListener("submit",async e=>{
+   e.preventDefault();const n=Number($("moduleSelect").value),id=rowId(n);
+   const title=$("contentTitle").value.trim();if(!title){status("শিরোনাম লিখুন।",true);return;}
+   const data={moduleId:n,title,content:JSON.stringify(readFields()),published:$("published").checked};
+   const btn=$("saveBtn");btn.disabled=true;status("তথ্য সংরক্ষণ হচ্ছে…");
    try{
-    if(rowsById.has(id))await tables.updateRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:id,data});
+    if(rows.has(id))await tables.updateRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:id,data});
     else await tables.createRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:id,data});
-    await loadSelected();status("তথ্য সফলভাবে সংরক্ষণ হয়েছে।");
-   }catch(err){status("সংরক্ষণ হয়নি: "+(err.message||String(err)),true);}
-   finally{$("saveBtn").disabled=false;}
+    await loadAllRows();await loadSelected();status("তথ্য সফলভাবে সংরক্ষিত হয়েছে।");
+   }catch(err){status("সংরক্ষণ হয়নি: "+friendlyError(err),true);}
+   finally{btn.disabled=false;}
   });
+  $("refreshBtn").addEventListener("click",async()=>{try{await loadAllRows();await loadSelected();status("তথ্য হালনাগাদ হয়েছে।");}catch(e){status(friendlyError(e),true);}});
   $("logoutBtn").addEventListener("click",async()=>{
    try{await account.deleteSession({sessionId:"current"});}catch{}
-   currentUser=null;$("editorPanel").classList.add("hidden");$("loginPanel").classList.remove("hidden");status("লগআউট সম্পন্ন।");
+   currentUser=null;showEditor(false);$("password").value="";status("লগআউট সম্পন্ন হয়েছে।");
   });
-  status("প্রশাসকের লগইন সেশন যাচাই করা হচ্ছে...");
-  try{await requireAdmin();}
-  catch(e){$("editorPanel").classList.add("hidden");$("loginPanel").classList.remove("hidden");if(e.code===401)status("প্রশাসকের ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করুন।");else status("অ্যাডমিন যাচাই ব্যর্থ: "+(e.message||String(e)),true);}
- }catch(e){status("প্রশাসনিক ব্যবস্থা চালু হয়নি: "+(e.message||String(e)),true);}
+  try{await requireAdmin();status("প্রশাসনিক প্যানেল প্রস্তুত।");}
+  catch(e){showEditor(false);if(e.code===401)status("প্রশাসকের ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করুন।");else status("প্রশাসক যাচাই: "+friendlyError(e),true);}
+ }catch(e){status("প্রশাসনিক ব্যবস্থা চালু হয়নি: "+friendlyError(e),true);}
 }
 start();
