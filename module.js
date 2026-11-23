@@ -5,6 +5,7 @@ document.title=item[0]+" | সাকছিপাড়া শায়লা আকর
 const client=new Client().setEndpoint(cfg.endpoint).setProject(cfg.projectId),db=new TablesDB(client),storage=new Storage(client);
 function add(parent,tag,value){const e=document.createElement(tag);e.textContent=value;parent.append(e);return e}
 function titleText(value,fallback=""){return Array.isArray(value)?(value.filter(Boolean).join(" ")||fallback):(value||fallback)}
+function parseContent(value){const raw=Array.isArray(value)?(value[0]||"{}"):(value||"{}");try{return JSON.parse(raw)}catch{return {details:String(raw)}}}
 function addLink(host,label,url){try{const u=new URL(url);if(!["http:","https:"].includes(u.protocol))return;const p=add(host,"p","");const a=document.createElement("a");a.href=u.href;a.target="_blank";a.rel="noopener noreferrer";a.textContent=label+" খুলুন";p.append(a)}catch{}}
 async function render(data){
  const host=$("moduleContent");host.replaceChildren();let count=0;
@@ -17,5 +18,5 @@ async function render(data){
  if(videoFiles.length){add(host,"h3","আপলোড করা ভিডিও");for(const file of videoFiles){try{const url=storage.getFileView({bucketId:cfg.storageBucketId,fileId:file.fileId});const video=document.createElement("video");video.controls=true;video.preload="metadata";video.playsInline=true;video.src=url;video.style.cssText="display:block;width:100%;max-width:900px;max-height:520px;margin:12px 0;border-radius:8px;background:#000";video.setAttribute("aria-label",file.name||"মসজিদের ভিডিও");host.append(video);count++}catch{}}}
  if(!count)add(host,"p","এই বিভাগের বিস্তারিত তথ্য এখনো প্রকাশ করা হয়নি।");
 }
-async function load(){add($("moduleContent"),"p","প্রকাশিত তথ্য লোড হচ্ছে…");try{const row=await db.getRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:"module-"+String(id).padStart(2,"0")});if(!row.published){$("moduleContent").replaceChildren();add($("moduleContent"),"p","এই বিভাগের তথ্য এখনো প্রকাশ করা হয়নি।");return}$("moduleTitle").textContent=titleText(row.title,item[0]);await render(JSON.parse(row.content||"{}"))}catch(e){$("moduleContent").replaceChildren();add($("moduleContent"),"p",e.code===404?"এই বিভাগের তথ্য এখনো প্রকাশ করা হয়নি।":"তথ্য লোড করা যায়নি। পরে আবার চেষ্টা করুন।")}}
+async function load(){add($("moduleContent"),"p","প্রকাশিত তথ্য লোড হচ্ছে…");try{const row=await db.getRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:"module-"+String(id).padStart(2,"0")});if(!row.published){$("moduleContent").replaceChildren();add($("moduleContent"),"p","এই বিভাগের তথ্য এখনো প্রকাশ করা হয়নি।");return}$("moduleTitle").textContent=titleText(row.title,item[0]);await render(parseContent(row.content))}catch(e){$("moduleContent").replaceChildren();add($("moduleContent"),"p",e.code===404?"এই বিভাগের তথ্য এখনো প্রকাশ করা হয়নি।":"তথ্য লোড করা যায়নি। পরে আবার চেষ্টা করুন।")}}
 load();
