@@ -34,7 +34,7 @@ A separate 20-module mosque and foundation website.
 - Exactly 20 module links and module detail routes.
 - Appwrite client configuration placeholder for a **new, separate project**.
 - Admin login page restricted in code to members of a configured Appwrite Team.
-- Admin dashboard provides module-specific content forms for all 20 sections, including prayer/azan times, Friday prayer, imam/committee details, notices/events, gallery links, and foundation programme information.
+- Admin dashboard provides a distinct, purpose-built data-entry form for each of the 20 modules. URL fields are separate from image-upload fields. Public media uploads use a dedicated Appwrite Storage bucket (`mosque20_media`) with public-read files and admin-team-only writes.
 - Homepage displays published introduction, prayer schedule, notices, events, and foundation programme summaries from Appwrite.
 - Public module pages load published text content from Appwrite.
 - Setup guide: [APPWRITE_SETUP_BN.md](APPWRITE_SETUP_BN.md).
@@ -45,7 +45,7 @@ A separate 20-module mosque and foundation website.
 - The remaining Console step is to add the GitHub Pages hostname `itdaynamic96-hub.github.io` as a Web platform.
 - No real prayer times, historical facts, contact details, or other factual mosque content have been invented.
 - See [APPWRITE_SETUP_BN.md](APPWRITE_SETUP_BN.md) for the current state and the one remaining Console step.
-- Photo/video upload is currently link-based; a dedicated Appwrite Storage bucket is still needed for direct uploads.
+- Direct image uploads are supported by the admin code when the dedicated `mosque20_media` Storage bucket is created and permissions are configured as described in `APPWRITE_SETUP_BN.md`.
 - Public aid/scholarship/medical application intake, case review, donation/payment processing, accounting, and staff role management require separate private tables, permissions, and workflows; they are not enabled yet.
 
 ## Security notes
