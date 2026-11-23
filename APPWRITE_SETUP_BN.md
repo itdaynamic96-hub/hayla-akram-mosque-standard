@@ -1,60 +1,54 @@
-# আলাদা Appwrite সেটআপ — ২০ মডিউলের ওয়েবসাইট
+# Appwrite সংযোগ — ২০ মডিউলের ওয়েবসাইট
 
-**গুরুত্বপূর্ণ:** আগের ১৫ ও ৬০ মডিউলের Appwrite/Supabase প্রজেক্টে কিছু পরিবর্তন করবেন না। এই সাইটের জন্য নতুন Appwrite Project তৈরি করুন।
+এই নির্দেশিকাটি বর্তমান নতুন প্রজেক্টের জন্য। আগের ১৫ ও ৬০ মডিউলের কোনো প্রজেক্টে পরিবর্তন করবেন না।
 
-## ১. নতুন Project
-1. https://cloud.appwrite.io/ খুলুন।
-2. Create project চাপুন।
-3. নাম দিন: `shayla-akram-mosque-20`
-4. Region হিসেবে Singapore নির্বাচন করুন (এই সাইটের কনফিগে Singapore endpoint রাখা হয়েছে)।
-5. Project তৈরি হলে Project ID কপি করে নিরাপদে রাখুন।
+## ইতিমধ্যে তৈরি ও কনফিগার করা হয়েছে
 
-## ২. Web platform
-1. নতুন Project-এর Overview/Platforms থেকে Add platform → Web app নির্বাচন করুন।
-2. GitHub Pages চালু করার পর পাওয়া সাইটের domain যোগ করুন। লোকাল পরীক্ষার জন্য `localhost`-ও যোগ করুন।
-3. Save করুন।
+- Appwrite Project: `shayla-akram-mosque-20`
+- Project ID: `6b0419d80025c3eb9434`
+- Endpoint: `https://sgp.cloud.appwrite.io/v1`
+- Database: `mosque20_db`
+- Database ID: `6b041d590028b371b760`
+- Table: `site_content`
+- Columns: `title` (Text), `content` (Text), `published` (Boolean), `moduleId` (Integer)
+- Admin Team: `Mosque 20 Admins`
+- Team ID: `mosque20_admins`
+- Admin account Team-এ Active সদস্য হিসেবে যুক্ত।
+- `appwrite-config.js`-এ Project, Database, Table ও Team-এর public ID বসানো আছে।
+- Table permission: Any = Read; Mosque 20 Admins Team = Create, Read, Update, Delete।
+- Row Security বর্তমানে OFF রাখা হয়েছে, যাতে এই table-level permission-গুলো কার্যকর থাকে।
 
-## ৩. Database এবং Table
-1. Databases → Create database।
-2. নাম ও ID: `mosque20_db`
-3. Database-এর ভেতরে Create table।
-4. নাম ও ID: `site_content`
-5. Columns-এ নিচের চারটি column যোগ করুন:
+## এখন Appwrite Console-এ একবার যা করতে হবে
 
-| Column key | Type | সেটিং |
-|---|---|---|
-| title | String | Size 150, Required |
-| content | String | Size 16000, Required নয় |
-| published | Boolean | Default false |
-| moduleId | Integer | Required নয় |
+1. Appwrite Console-এ `shayla-akram-mosque-20` প্রজেক্ট খুলুন।
+2. Settings → Platforms-এ যান।
+3. Add platform → Web নির্বাচন করুন।
+4. Name দিন: `Mosque 20 GitHub Pages`
+5. Hostname/Domain দিন: `itdaynamic96-hub.github.io`
+   - এখানে `https://` দেবেন না।
+   - শেষে `/hayla-akram-mosque-standard/` path দেবেন না।
+6. Save করুন। আগে থেকে থাকা `localhost` platform মুছবেন না।
 
-Appwrite system নিজে `$id`, `$createdAt`, `$updatedAt` ইত্যাদি পরিচালনা করে। এখানে আলাদা করে তৈরি করবেন না।
+## Admin login
 
-## ৪. নিরাপদ Permissions
-1. Table-এর Settings → Permissions খুলুন।
-2. Row Security চালু করুন।
-3. Table permission-এ **Read: Any** দিন।
-4. **Create, Update, Delete: শুধু Admin Team**-কে দিন। Any/Users-কে কখনো write permission দেবেন না।
-5. Save করুন।
+- সাইট: https://itdaynamic96-hub.github.io/hayla-akram-mosque-standard/
+- Admin: https://itdaynamic96-hub.github.io/hayla-akram-mosque-standard/admin.html
+- Appwrite Auth-এ তৈরি প্রশাসক account-এর নিজের ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করতে হবে।
+- পাসওয়ার্ড কারও সঙ্গে শেয়ার করবেন না।
+- Admin Team-এর সদস্য না হলে editor খুলবে না।
 
-## ৫. Admin Team
-1. Auth/Teams → Create team।
-2. Team name: `Mosque20Admins`, Team ID: `mosque20_admins`
-3. Teams-এর Memberships থেকে আপনার প্রশাসক Appwrite account-কে এই Team-এ যোগ করুন এবং invitation accept করুন।
-4. Team ID কপি করুন।
+## ২০টি মডিউলে তথ্য সংরক্ষণ
 
-## ৬. কনফিগারেশন
-Repository-তে `appwrite-config.js` ফাইল খুলে নিচের তিনটি placeholder বদলান:
-- `PASTE_NEW_PROJECT_ID`
-- `PASTE_NEW_DATABASE_ID`
-- `PASTE_NEW_ADMIN_TEAM_ID`
+প্রতিটি মডিউলের row ID হবে `module-01` থেকে `module-20`। Admin panel-এ মডিউল বেছে শিরোনাম ও লেখা লিখে Save করুন। প্রকাশ করতে “ওয়েবসাইটে প্রকাশ করুন” চেক করুন। প্রকাশ না করলে public page-এ লেখা দেখা যাবে না।
 
-এগুলো public project identifiers; **API Key, secret বা password কখনো এই ফাইলে দেবেন না**।
+নামাজের সময়, মসজিদের ইতিহাস, যোগাযোগের ঠিকানা বা কমিটির নামের মতো তথ্য যাচাই না করে লিখবেন না।
 
-## ৭. পরীক্ষা
-- `admin.html` খুলে Team-এর সদস্য এমন account দিয়ে login করুন।
-- ২০টি মডিউলের যেকোনো একটিতে যাচাইকৃত তথ্য লিখে Save করুন।
-- Public module page-এ প্রকাশিত তথ্য দেখুন।
+## নিরাপত্তা
 
-## বর্তমান সীমা
-এই প্রথম সংস্করণের Admin panel ২০টি মডিউলের শিরোনাম, লেখা ও প্রকাশ/অপ্রকাশ নিয়ন্ত্রণ করে। ফটো/ভিডিও upload, আবেদন ফর্ম, আর্থিক হিসাব, donation/payment gateway এবং আলাদা staff permission এখনো যোগ করা হয়নি। এগুলো আলাদা পর্যায়ে তৈরি করতে হবে।
+- Browser code বা GitHub-এ Appwrite API Key, secret বা password দেবেন না।
+- Any permission-এ Create/Update/Delete দেবেন না।
+- আগের ১৫/৬০ মডিউলের project/database ব্যবহার করবেন না।
+
+## এই সংস্করণের সীমাবদ্ধতা
+
+বর্তমান Admin panel ২০টি মডিউলের শিরোনাম, লেখা এবং প্রকাশ/অপ্রকাশ নিয়ন্ত্রণ করে। ফটো/ভিডিও upload, সহায়তার আবেদন ফর্ম, শিক্ষাবৃত্তির পূর্ণ workflow, আর্থিক হিসাব, donation/payment gateway এবং আলাদা staff permission এখনো তৈরি হয়নি।
