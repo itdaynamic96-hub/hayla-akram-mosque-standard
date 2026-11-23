@@ -8,7 +8,7 @@ const foundation=[
 ];
 const prayerGrid=document.getElementById("prayerGrid");
 function showPrayerMessage(message){prayerGrid.replaceChildren();const card=document.createElement("div");card.className="prayer-card";card.style.gridColumn="1 / -1";card.style.textAlign="left";const h=document.createElement("b");h.textContent="নামাজের সময়সূচি";const p=document.createElement("p");p.textContent=message;p.style.whiteSpace="pre-wrap";p.style.margin="8px 0 0";card.append(h,p);prayerGrid.append(card);}
-function parse(raw){try{const d=JSON.parse(raw||"{}");return d&&typeof d==="object"?d:{details:raw||""};}catch{return {details:raw||""};}}
+function parse(raw){const value=Array.isArray(raw)?(raw[0]||"{}"):(raw||"{}");try{const d=JSON.parse(value);return d&&typeof d==="object"?d:{details:value};}catch{return {details:value};}}
 function fillText(id,value){const el=document.getElementById(id);if(el&&value)el.textContent=value;}
 function titleText(value,fallback=""){return Array.isArray(value)?(value.filter(Boolean).join(" ")||fallback):(value||fallback)}
 function card(parent,icon,title,description,href){const a=document.createElement("a");a.className="info-card";a.href=href;const i=document.createElement("span");i.textContent=icon;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.textContent=description;a.append(i,h,p);parent.append(a);}
