@@ -50,4 +50,4 @@ $("saveBtn").addEventListener("click",async()=>{
  finally{$("saveBtn").disabled=false;}
 });
 $("logoutBtn").addEventListener("click",async()=>{try{await account.deleteSession({sessionId:"current"});}catch{}currentUser=null;$("editorPanel").classList.add("hidden");$("loginPanel").classList.remove("hidden");status("লগআউট সম্পন্ন।");});
-(async()=>{if(!ready()){status("সেটআপ বাকি: appwrite-config.js ফাইলে নতুন Project ID, Database ID ও Admin Team ID বসাতে হবে।",true);return;}try{await requireAdmin();}catch(e){$("editorPanel").classList.add("hidden");$("loginPanel").classList.remove("hidden");if(e.code!==401)status(e.message,true);}})();
+(async()=>{if(!ready()){status("সেটআপ বাকি: appwrite-config.js ফাইলে নতুন Project ID, Database ID ও Admin Team ID বসাতে হবে।",true);return;}status("প্রশাসকের লগইন সেশন যাচাই করা হচ্ছে...");try{await requireAdmin();}catch(e){$("editorPanel").classList.add("hidden");$("loginPanel").classList.remove("hidden");if(e.code===401)status("প্রশাসক হিসেবে প্রবেশ করতে ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করুন।");else status(e.message,true);}})();
