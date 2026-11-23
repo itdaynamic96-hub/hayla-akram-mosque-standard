@@ -39,7 +39,7 @@ $("moduleSelect").innerHTML=modules.map((m,i)=>'<option value="'+(i+1)+'">'+Stri
 $("loginForm").addEventListener("submit",login);
 $("moduleSelect").addEventListener("change",loadSelected);
 $("saveBtn").addEventListener("click",async()=>{
- const n=Number($("moduleSelect").value),id=rowId(n),data={title:$("contentTitle").value.trim(),content:$("contentBody").value.trim(),published:$("published").checked};
+ const n=Number($("moduleSelect").value),id=rowId(n),data={moduleId:n,title:$("contentTitle").value.trim(),content:$("contentBody").value.trim(),published:$("published").checked};
  if(!data.title){status("শিরোনাম লিখুন।",true);return;}
  $("saveBtn").disabled=true;
  try{
