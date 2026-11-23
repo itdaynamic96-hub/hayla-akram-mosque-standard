@@ -59,13 +59,13 @@
 
 ## এই সংস্করণের সীমাবদ্ধতা
 
-- ছবি/ভিডিও সরাসরি upload নয়; আপাতত প্রকাশ্য HTTPS লিংক দিতে হবে। সরাসরি upload-এর জন্য Appwrite Storage bucket তৈরি ও অনুমতি কনফিগার করা প্রয়োজন।
+- সরাসরি ছবি ও ভিডিও আপলোড চালু করা হয়েছে। ছবি প্রতি ফাইল সর্বোচ্চ ৮ MB এবং ভিডিও প্রতি ফাইল সর্বোচ্চ ৫০ MB। ভিডিও URL-ও দেওয়া যাবে।
 - দরিদ্র পরিবার, এতিম, শিক্ষাবৃত্তি ও চিকিৎসা সহায়তার আবেদন গ্রহণের জন্য আলাদা private table দরকার। ব্যক্তিগত তথ্য বর্তমান public-readable `site_content` table-এ রাখা নিরাপদ নয়; তাই আবেদন জমা/যাচাই workflow এখনো চালু করা হয়নি।
 - Donation/payment gateway, হিসাবরক্ষণ ও আলাদা staff role workflow এখনো চালু নয়।
 - বর্তমান admin dashboard কেবল প্রকাশযোগ্য website content সম্পাদনা করে।
 
 
-## সরাসরি ছবি আপলোডের জন্য Storage Bucket তৈরি
+## ছবি ও ভিডিও আপলোডের Storage Bucket সেটিং
 
 নতুন ২০ মডিউলের জন্য আলাদা Storage bucket তৈরি করতে হবে। এটি আগের অন্য কোনো প্রজেক্টের bucket নয়।
 
@@ -75,12 +75,12 @@
 4. Bucket ID হুবহু দিন: `mosque20_media`
 5. Bucket name দিন: `Mosque 20 Public Media`
 6. File Security চালু রাখুন (যদি অপশনটি থাকে)।
-7. Maximum file size 8 MB রাখুন; অনুমোদিত file extensions: `jpg,jpeg,png,webp,gif`।
+7. **Settings**-এ গিয়ে Maximum file size **50 MB** করুন। অনুমোদিত file extensions দিন: `jpg,jpeg,png,webp,gif,mp4,webm`।
 8. Bucket permissions-এ `Mosque 20 Admins` Team-কে Create, Read, Update, Delete দিন। `Any`-কে Create/Update/Delete দেবেন না।
-9. Bucket তৈরি হলে Admin Panel থেকে ছবি আপলোড করা যাবে। আপলোড করা প্রতিটি ছবিতে Public Read permission দেওয়া হবে, যাতে ওয়েবসাইটের দর্শক ছবি দেখতে পারেন। ব্যক্তিগত আবেদনপত্র বা পরিচয়পত্র এখানে আপলোড করবেন না।
+9. Bucket ইতিমধ্যে তৈরি করা হয়েছে। Security-তে File level security চালু এবং `Mosque 20 Admins` Team-কে Create, Read, Update, Delete দেওয়া হয়েছে। আপলোড করা প্রতিটি মিডিয়া ফাইলে Public Read permission দেওয়া হবে, যাতে ওয়েবসাইটের দর্শক দেখতে পারেন। সাধারণ দর্শকদের Bucket-level Create permission দেবেন না। ব্যক্তিগত আবেদনপত্র বা পরিচয়পত্র এখানে আপলোড করবেন না।
 
 **নিরাপত্তা:** এই Storage bucket শুধু প্রকাশযোগ্য ওয়েবসাইটের ছবি/পোস্টারের জন্য। দরিদ্র পরিবার, এতিম, শিক্ষার্থী বা রোগীর ব্যক্তিগত নথির জন্য আলাদা private storage ও database permission লাগবে।
 
 ## নতুন আলাদা ফরম
 
-প্রতিটি ২০টি মডিউলের জন্য নিজস্ব ফিল্ড-স্কিমা রয়েছে। URL ফিল্ড এবং ছবি আপলোড ফিল্ড আলাদা। ছবি আপলোডে এক বা একাধিক ছবি বাছাই করা যায়; সর্বোচ্চ ৮ MB প্রতি ছবি। ছবি Storage-এ রাখা হয় এবং ফাইল ID মডিউলের কনটেন্টে সংরক্ষণ হয়।
+প্রতিটি ২০টি মডিউলের জন্য নিজস্ব ফিল্ড-স্কিমা রয়েছে। URL ফিল্ড এবং ফাইল আপলোড ফিল্ড আলাদা। ছবি আপলোডে এক বা একাধিক ছবি বাছাই করা যায়; সর্বোচ্চ ৮ MB প্রতি ছবি। ভিডিও গ্যালারিতে MP4/WebM ফাইল সর্বোচ্চ ৫০ MB আপলোড করা যায়, অথবা YouTube/বাহ্যিক ভিডিও URL দেওয়া যায়। আপলোড করা মিডিয়া Appwrite Storage-এ থাকে এবং ফাইল ID মডিউলের কনটেন্টে সংরক্ষণ হয়।
