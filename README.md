@@ -34,7 +34,7 @@ A separate 20-module mosque and foundation website.
 - Exactly 20 module links and module detail routes.
 - Appwrite client configuration placeholder for a **new, separate project**.
 - Admin login page restricted in code to members of a configured Appwrite Team.
-- Admin dashboard provides a distinct, purpose-built data-entry form for each of the 20 modules. URL fields are separate from image-upload fields. Public media uploads use a dedicated Appwrite Storage bucket (`mosque20_media`) with public-read files and admin-team-only writes.
+- Admin dashboard provides a distinct, purpose-built data-entry form for each of the 20 modules. URL fields are separate from image-upload fields. Public media uploads use a dedicated Appwrite Storage bucket (`mosque20_media`) with public-read files and admin-team-only writes. Images are limited to 8 MB each; the video gallery accepts direct MP4/WebM uploads up to 50 MB each and YouTube/external video URLs.
 - Homepage displays published introduction, prayer schedule, notices, events, and foundation programme summaries from Appwrite.
 - Public module pages load published text content from Appwrite.
 - Setup guide: [APPWRITE_SETUP_BN.md](APPWRITE_SETUP_BN.md).
@@ -45,7 +45,7 @@ A separate 20-module mosque and foundation website.
 - The remaining Console step is to add the GitHub Pages hostname `itdaynamic96-hub.github.io` as a Web platform.
 - No real prayer times, historical facts, contact details, or other factual mosque content have been invented.
 - See [APPWRITE_SETUP_BN.md](APPWRITE_SETUP_BN.md) for the current state and the one remaining Console step.
-- Direct image uploads are supported by the admin code when the dedicated `mosque20_media` Storage bucket is created and permissions are configured as described in `APPWRITE_SETUP_BN.md`.
+- Direct image and video uploads are supported by the admin code. Configure the existing `mosque20_media` Storage bucket for a 50 MB maximum and allow `jpg,jpeg,png,webp,gif,mp4,webm`; the admin code separately limits images to 8 MB and videos to 50 MB. See `APPWRITE_SETUP_BN.md`.
 - Public aid/scholarship/medical application intake, case review, donation/payment processing, accounting, and staff role management require separate private tables, permissions, and workflows; they are not enabled yet.
 
 ## Security notes
