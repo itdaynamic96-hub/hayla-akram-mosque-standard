@@ -4,26 +4,46 @@ const MODULES=[
 ];
 const $=id=>document.getElementById(id);
 const commonFields=[
- ["summary","সংক্ষিপ্ত পরিচিতি","textarea"],["details","বিস্তারিত তথ্য","textarea"],
- ["date","তারিখ","text"],["time","সময়","text"],["location","স্থান/ঠিকানা","text"],
- ["responsible","দায়িত্বশীল ব্যক্তি/কমিটি","text"],["contact","যোগাযোগের তথ্য","text"],
- ["media","ছবি/ভিডিও/বাহ্যিক লিংক (প্রতি লাইনে একটি)","textarea"]
+ ["summary","সংক্ষিপ্ত পরিচিতি","textarea"],["details","বিস্তারিত তথ্য","textarea"],["contact","যোগাযোগের তথ্য","text"]
 ];
 const specialFields={
- 4:[["fajr","ফজরের জামাত","text"],["sunrise","সূর্যোদয়","text"],["dhuhr","যোহরের জামাত","text"],["asr","আসরের জামাত","text"],["maghrib","মাগরিবের জামাত","text"],["isha","এশার জামাত","text"]],
- 5:[["fajr","ফজরের আজান","text"],["dhuhr","যোহরের আজান","text"],["asr","আসরের আজান","text"],["maghrib","মাগরিবের আজান","text"],["isha","এশার আজান","text"]],
- 6:[["jummaKhutbah","জুমার খুতবার সময়","text"],["jummaJamaat","জুমার জামাতের সময়","text"]],
- 7:[["personName","ইমাম/খতিবের নাম","text"],["designation","পদবি","text"],["phone","মোবাইল নম্বর","text"],["responsibility","দায়িত্ব ও পরিচিতি","textarea"]],
- 8:[["personName","কমিটির সদস্যদের নাম ও তালিকা","textarea"],["designation","পদবি/দায়িত্ব","textarea"],["phone","যোগাযোগ নম্বর","text"]],
- 9:[["date","নোটিশের তারিখ","text"],["deadline","কার্যকর হওয়ার/শেষ তারিখ","text"],["responsible","নোটিশ প্রদানকারী","text"]],
- 10:[["eventTitle","অনুষ্ঠানের নাম","text"],["date","অনুষ্ঠানের তারিখ","text"],["time","অনুষ্ঠানের সময়","text"],["location","অনুষ্ঠানের স্থান","text"],["responsible","আয়োজক","text"]],
+ 4:[["date","কার্যকর হওয়ার তারিখ","text"],["location","মসজিদ/স্থান","text"],["fajr","ফজরের জামাত","text"],["sunrise","সূর্যোদয়","text"],["dhuhr","যোহরের জামাত","text"],["asr","আসরের জামাত","text"],["maghrib","মাগরিবের জামাত","text"],["isha","এশার জামাত","text"],["responsible","সময়সূচি যাচাইকারী","text"]],
+ 5:[["date","কার্যকর হওয়ার তারিখ","text"],["location","স্থান","text"],["fajr","ফজরের আজান","text"],["dhuhr","যোহরের আজান","text"],["asr","আসরের আজান","text"],["maghrib","মাগরিবের আজান","text"],["isha","এশার আজান","text"]],
+ 6:[["date","কার্যকর হওয়ার তারিখ","text"],["location","স্থান","text"],["jummaKhutbah","জুমার খুতবার সময়","text"],["jummaJamaat","জুমার জামাতের সময়","text"],["responsible","দায়িত্বশীল ব্যক্তি","text"]],
+ 7:[["personName","ইমাম/খতিবের নাম","text"],["designation","পদবি","text"],["phone","মোবাইল নম্বর","text"],["responsibility","দায়িত্ব ও পরিচিতি","textarea"],["media","ছবি/প্রোফাইল লিংক","text"]],
+ 8:[["personName","কমিটির সদস্যদের নাম ও তালিকা","textarea"],["designation","পদবি/দায়িত্ব","textarea"],["phone","যোগাযোগ নম্বর","text"],["date","কমিটির মেয়াদকাল","text"]],
+ 9:[["date","নোটিশের তারিখ","text"],["deadline","কার্যকর হওয়ার/শেষ তারিখ","text"],["responsible","নোটিশ প্রদানকারী","text"],["media","সংযুক্ত নথি/লিংক","textarea"]],
+ 10:[["eventTitle","অনুষ্ঠানের নাম","text"],["date","অনুষ্ঠানের তারিখ","text"],["time","অনুষ্ঠানের সময়","text"],["location","অনুষ্ঠানের স্থান","text"],["responsible","আয়োজক","text"],["media","অনুষ্ঠানের ছবি/লিংক","textarea"]],
  11:[["media","ছবির সরাসরি লিংক (প্রতি লাইনে একটি)","textarea"],["date","ছবির তারিখ/অনুষ্ঠান","text"]],
  12:[["media","ভিডিও লিংক (প্রতি লাইনে একটি)","textarea"],["date","ভিডিওর তারিখ/অনুষ্ঠান","text"]],
  13:[["date","খুতবার তারিখ","text"],["personName","খতিবের নাম","text"],["eventTitle","খুতবার বিষয়","text"],["media","খুতবা/ভিডিওর লিংক","textarea"]],
- 16:[["eligibility","সহায়তা পাওয়ার যোগ্যতা","textarea"],["process","আবেদন পদ্ধতি","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["deadline","আবেদনের শেষ তারিখ","text"],["assistanceType","কী ধরনের সহায়তা দেওয়া হয়","textarea"]],
- 17:[["eligibility","এতিম সহায়তার যোগ্যতা","textarea"],["process","সহায়তা পাওয়ার প্রক্রিয়া","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["deadline","আবেদনের সময়সীমা","text"]],
- 18:[["eligibility","শিক্ষাবৃত্তির যোগ্যতা","textarea"],["process","আবেদনের নিয়ম","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["deadline","আবেদনের শেষ তারিখ","text"],["assistanceType","বৃত্তির ধরন/পরিমাণ","textarea"]],
- 19:[["eligibility","চিকিৎসা সহায়তার যোগ্যতা","textarea"],["process","আবেদন পদ্ধতি","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["assistanceType","সহায়তার ধরন","textarea"]],
+ 16:[["eligibility","সহায়তা পাওয়ার যোগ্যতা","textarea"],["process","আবেদন পদ্ধতি","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["deadline","আবেদনের শেষ তারিখ","text"],["assistanceType","কী ধরনের সহায়তা দেওয়া হয়","textarea",["responsible","যোগাযোগ/দায়িত্বশীল","text"]]],
+ 17:[["eligibility","এতিম সহায়তার যোগ্যতা","textarea"],["process","সহায়তা পাওয়ার প্রক্রিয়া","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["deadline","আবেদনের সময়সীমা","text",["responsible","যোগাযোগ/দায়িত্বশীল","text"]]],
+ 18:[["eligibility","শিক্ষাবৃত্তির যোগ্যতা","textarea"],["process","আবেদনের নিয়ম","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["deadline","আবেদনের শেষ তারিখ","text"],["assistanceType","বৃত্তির ধরন/পরিমাণ","textarea",["responsible","যোগাযোগ/দায়িত্বশীল","text"]]],
+ 19:[["eligibility","চিকিৎসা সহায়তার যোগ্যতা","textarea"],["process","আবেদন পদ্ধতি","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["assistanceType","সহায়তার ধরন","textarea",["responsible","যোগাযোগ/দায়িত্বশীল","text"]]],
+ nst cfg=window.MOSQUE_APPWRITE_CONFIG||{};
+const MODULES=[
+"হোমপেজ","মসজিদের পরিচিতি","মসজিদের ইতিহাস","নামাজের সময়সূচি","আজানের সময়সূচি","জুমার নামাজের সময়","ইমাম ও খতিব পরিচিতি","পরিচালনা কমিটি","নোটিশ বোর্ড","অনুষ্ঠানসূচি","ফটো গ্যালারি","ভিডিও গ্যালারি","জুমার খুতবা আর্কাইভ","ফাউন্ডেশন পরিচিতি","লক্ষ্য ও উদ্দেশ্য","দরিদ্র পরিবার সহায়তা","এতিম সহায়তা","শিক্ষাবৃত্তি ব্যবস্থাপনা","চিকিৎসা সহায়তা","দুর্যোগ ও ত্রাণ কার্যক্রম"
+];
+const $=id=>document.getElementById(id);
+const commonFields=[
+ ["summary","সংক্ষিপ্ত পরিচিতি","textarea"],["details","বিস্তারিত তথ্য","textarea"],["contact","যোগাযোগের তথ্য","text"]
+];
+const specialFields={
+ 4:[["date","কার্যকর হওয়ার তারিখ","text"],["location","মসজিদ/স্থান","text"],["fajr","ফজরের জামাত","text"],["sunrise","সূর্যোদয়","text"],["dhuhr","যোহরের জামাত","text"],["asr","আসরের জামাত","text"],["maghrib","মাগরিবের জামাত","text"],["isha","এশার জামাত","text"],["responsible","সময়সূচি যাচাইকারী","text"]],
+ 5:[["date","কার্যকর হওয়ার তারিখ","text"],["location","স্থান","text"],["fajr","ফজরের আজান","text"],["dhuhr","যোহরের আজান","text"],["asr","আসরের আজান","text"],["maghrib","মাগরিবের আজান","text"],["isha","এশার আজান","text"]],
+ 6:[["date","কার্যকর হওয়ার তারিখ","text"],["location","স্থান","text"],["jummaKhutbah","জুমার খুতবার সময়","text"],["jummaJamaat","জুমার জামাতের সময়","text"],["responsible","দায়িত্বশীল ব্যক্তি","text"]],
+ 7:[["personName","ইমাম/খতিবের নাম","text"],["designation","পদবি","text"],["phone","মোবাইল নম্বর","text"],["responsibility","দায়িত্ব ও পরিচিতি","textarea"],["media","ছবি/প্রোফাইল লিংক","text"]],
+ 8:[["personName","কমিটির সদস্যদের নাম ও তালিকা","textarea"],["designation","পদবি/দায়িত্ব","textarea"],["phone","যোগাযোগ নম্বর","text"],["date","কমিটির মেয়াদকাল","text"]],
+ 9:[["date","নোটিশের তারিখ","text"],["deadline","কার্যকর হওয়ার/শেষ তারিখ","text"],["responsible","নোটিশ প্রদানকারী","text"],["media","সংযুক্ত নথি/লিংক","textarea"]],
+ 10:[["eventTitle","অনুষ্ঠানের নাম","text"],["date","অনুষ্ঠানের তারিখ","text"],["time","অনুষ্ঠানের সময়","text"],["location","অনুষ্ঠানের স্থান","text"],["responsible","আয়োজক","text"],["media","অনুষ্ঠানের ছবি/লিংক","textarea"]],
+ 11:[["media","ছবির সরাসরি লিংক (প্রতি লাইনে একটি)","textarea"],["date","ছবির তারিখ/অনুষ্ঠান","text"]],
+ 12:[["media","ভিডিও লিংক (প্রতি লাইনে একটি)","textarea"],["date","ভিডিওর তারিখ/অনুষ্ঠান","text"]],
+ 13:[["date","খুতবার তারিখ","text"],["personName","খতিবের নাম","text"],["eventTitle","খুতবার বিষয়","text"],["media","খুতবা/ভিডিওর লিংক","textarea"]],
+ 16:[["eligibility","সহায়তা পাওয়ার যোগ্যতা","textarea"],["process","আবেদন পদ্ধতি","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["deadline","আবেদনের শেষ তারিখ","text"],["assistanceType","কী ধরনের সহায়তা দেওয়া হয়","textarea",["responsible","যোগাযোগ/দায়িত্বশীল","text"]]],
+ 17:[["eligibility","এতিম সহায়তার যোগ্যতা","textarea"],["process","সহায়তা পাওয়ার প্রক্রিয়া","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["deadline","আবেদনের সময়সীমা","text",["responsible","যোগাযোগ/দায়িত্বশীল","text"]]],
+ 18:[["eligibility","শিক্ষাবৃত্তির যোগ্যতা","textarea"],["process","আবেদনের নিয়ম","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["deadline","আবেদনের শেষ তারিখ","text"],["assistanceType","বৃত্তির ধরন/পরিমাণ","textarea",["responsible","যোগাযোগ/দায়িত্বশীল","text"]]],
+ 19:[["eligibility","চিকিৎসা সহায়তার যোগ্যতা","textarea"],["process","আবেদন পদ্ধতি","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["assistanceType","সহায়তার ধরন","textarea",["responsible","যোগাযোগ/দায়িত্বশীল","text"]]],
  20:[["eligibility","ত্রাণ পাওয়ার যোগ্যতা/অগ্রাধিকার","textarea"],["process","সহায়তা পাওয়ার প্রক্রিয়া","textarea"],["assistanceType","ত্রাণ/সহায়তার ধরন","textarea"],["deadline","আবেদনের সময়সীমা","text"]]
 };
 let currentFields=[];
