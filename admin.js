@@ -2,148 +2,79 @@ const cfg=window.MOSQUE_APPWRITE_CONFIG||{};
 const MODULES=[
 "হোমপেজ","মসজিদের পরিচিতি","মসজিদের ইতিহাস","নামাজের সময়সূচি","আজানের সময়সূচি","জুমার নামাজের সময়","ইমাম ও খতিব পরিচিতি","পরিচালনা কমিটি","নোটিশ বোর্ড","অনুষ্ঠানসূচি","ফটো গ্যালারি","ভিডিও গ্যালারি","জুমার খুতবা আর্কাইভ","ফাউন্ডেশন পরিচিতি","লক্ষ্য ও উদ্দেশ্য","দরিদ্র পরিবার সহায়তা","এতিম সহায়তা","শিক্ষাবৃত্তি ব্যবস্থাপনা","চিকিৎসা সহায়তা","দুর্যোগ ও ত্রাণ কার্যক্রম"
 ];
-const $=id=>document.getElementById(id);
-const commonFields=[
- ["summary","সংক্ষিপ্ত পরিচিতি","textarea"],["details","বিস্তারিত তথ্য","textarea"],["contact","যোগাযোগের তথ্য","text"]
+const SCHEMAS=[
+[{key:"welcome",label:"স্বাগত বার্তা",type:"text",required:true},{key:"headline",label:"প্রধান শিরোনাম",type:"text",required:true},{key:"intro",label:"হোমপেজ পরিচিতি",type:"textarea"},{key:"highlight",label:"বিশেষ ঘোষণা",type:"textarea"},{key:"actionUrl",label:"প্রধান বাটনের URL",type:"url"},{key:"cover",label:"হোমপেজের প্রচ্ছদ ছবি",type:"image"}],
+[{key:"address",label:"সম্পূর্ণ ঠিকানা",type:"textarea",required:true},{key:"established",label:"প্রতিষ্ঠার সাল",type:"text"},{key:"founder",label:"প্রতিষ্ঠাতা/উদ্যোক্তা",type:"text"},{key:"capacity",label:"মুসল্লির ধারণক্ষমতা",type:"number"},{key:"facilities",label:"মসজিদের সুযোগ-সুবিধা",type:"textarea"},{key:"mapUrl",label:"Google Maps URL",type:"url"},{key:"mosquePhoto",label:"মসজিদের ছবি",type:"image"}],
+[{key:"established",label:"প্রতিষ্ঠার সাল/তারিখ",type:"text"},{key:"founders",label:"প্রতিষ্ঠাকালীন ব্যক্তিবর্গ",type:"textarea"},{key:"timeline",label:"ইতিহাস ও উল্লেখযোগ্য ঘটনা",type:"textarea",required:true},{key:"sources",label:"ইতিহাসের তথ্যসূত্র",type:"textarea"},{key:"documentUrl",label:"ঐতিহাসিক নথির URL",type:"url"},{key:"archivePhoto",label:"পুরোনো ছবি/নথি",type:"image",multiple:true}],
+[{key:"effectiveDate",label:"কার্যকর হওয়ার তারিখ",type:"date",required:true},{key:"fajr",label:"ফজরের জামাত",type:"time",required:true},{key:"sunrise",label:"সূর্যোদয়",type:"time"},{key:"dhuhr",label:"যোহরের জামাত",type:"time",required:true},{key:"asr",label:"আসরের জামাত",type:"time",required:true},{key:"maghrib",label:"মাগরিবের জামাত",type:"time",required:true},{key:"isha",label:"এশার জামাত",type:"time",required:true},{key:"scheduleNote",label:"সময়সূচি সংক্রান্ত নির্দেশনা",type:"textarea"}],
+[{key:"effectiveDate",label:"কার্যকর হওয়ার তারিখ",type:"date",required:true},{key:"fajrAdhan",label:"ফজরের আজান",type:"time",required:true},{key:"dhuhrAdhan",label:"যোহরের আজান",type:"time",required:true},{key:"asrAdhan",label:"আসরের আজান",type:"time",required:true},{key:"maghribAdhan",label:"মাগরিবের আজান",type:"time",required:true},{key:"ishaAdhan",label:"এশার আজান",type:"time",required:true},{key:"adhanNote",label:"আজান সংক্রান্ত নির্দেশনা",type:"textarea"}],
+[{key:"fridayDate",label:"কার্যকর তারিখ",type:"date",required:true},{key:"khutbahTime",label:"খুতবা শুরু",type:"time",required:true},{key:"jamaatTime",label:"জামাত শুরু",type:"time",required:true},{key:"secondJamaat",label:"অতিরিক্ত জামাতের সময়",type:"time"},{key:"instructions",label:"মুসল্লিদের জন্য নির্দেশনা",type:"textarea"},{key:"noticeUrl",label:"বিশেষ নির্দেশনার URL",type:"url"}],
+[{key:"personName",label:"ইমাম/খতিবের পূর্ণ নাম",type:"text",required:true},{key:"role",label:"দায়িত্ব/পদবি",type:"select",options:["ইমাম","খতিব","ইমাম ও খতিব","মুয়াজ্জিন","অন্যান্য"]},{key:"education",label:"শিক্ষাগত ও ধর্মীয় যোগ্যতা",type:"textarea"},{key:"experience",label:"কর্ম-অভিজ্ঞতা",type:"textarea"},{key:"joiningDate",label:"যোগদানের তারিখ",type:"date"},{key:"phone",label:"যোগাযোগ নম্বর",type:"tel"},{key:"profileUrl",label:"ব্যক্তিগত/প্রাতিষ্ঠানিক URL",type:"url"},{key:"portrait",label:"ব্যক্তির ছবি",type:"image"}],
+[{key:"term",label:"কমিটির মেয়াদ",type:"text",required:true},{key:"chairman",label:"সভাপতির নাম",type:"text",required:true},{key:"secretary",label:"সাধারণ সম্পাদকের নাম",type:"text"},{key:"treasurer",label:"কোষাধ্যক্ষের নাম",type:"text"},{key:"members",label:"অন্যান্য সদস্য ও দায়িত্ব (প্রতি লাইনে একজন)",type:"textarea"},{key:"committeePhone",label:"কমিটির যোগাযোগ নম্বর",type:"tel"},{key:"resolutionUrl",label:"কমিটি অনুমোদনের নথির URL",type:"url"},{key:"committeePhoto",label:"কমিটির ছবি",type:"image"}],
+[{key:"noticeNo",label:"নোটিশ নম্বর",type:"text"},{key:"noticeDate",label:"প্রকাশের তারিখ",type:"date",required:true},{key:"subject",label:"নোটিশের বিষয়",type:"text",required:true},{key:"noticeBody",label:"নোটিশের পূর্ণ বিবরণ",type:"textarea",required:true},{key:"deadline",label:"শেষ তারিখ",type:"date"},{key:"issuer",label:"নোটিশ প্রদানকারী",type:"text"},{key:"attachmentUrl",label:"সংযুক্ত PDF/নথির URL",type:"url"},{key:"noticeImage",label:"নোটিশের ছবি",type:"image"}],
+[{key:"eventName",label:"অনুষ্ঠানের নাম",type:"text",required:true},{key:"eventDate",label:"অনুষ্ঠানের তারিখ",type:"date",required:true},{key:"startTime",label:"শুরুর সময়",type:"time"},{key:"endTime",label:"শেষের সময়",type:"time"},{key:"venue",label:"অনুষ্ঠানের স্থান",type:"text"},{key:"organizer",label:"আয়োজক",type:"text"},{key:"eventDetails",label:"অনুষ্ঠানের বিবরণ",type:"textarea"},{key:"registrationUrl",label:"নিবন্ধন URL",type:"url"},{key:"eventPoster",label:"অনুষ্ঠানের পোস্টার/ছবি",type:"image",multiple:true}],
+[{key:"albumTitle",label:"অ্যালবামের নাম",type:"text",required:true},{key:"photoDate",label:"ছবির তারিখ",type:"date"},{key:"photoCaption",label:"অ্যালবামের বিবরণ",type:"textarea"},{key:"photoSourceUrl",label:"বাহ্যিক ছবির URL (ঐচ্ছিক)",type:"url"},{key:"photos",label:"এক বা একাধিক ছবি আপলোড",type:"image",multiple:true}],
+[{key:"videoTitle",label:"ভিডিওর শিরোনাম",type:"text",required:true},{key:"videoDate",label:"ভিডিওর তারিখ",type:"date"},{key:"videoPlatform",label:"ভিডিও প্ল্যাটফর্ম",type:"select",options:["YouTube","Facebook","Vimeo","অন্যান্য"]},{key:"videoUrl",label:"ভিডিও URL",type:"url",required:true},{key:"videoDescription",label:"ভিডিওর বিবরণ",type:"textarea"},{key:"thumbnail",label:"ভিডিওর থাম্বনেইল ছবি",type:"image"}],
+[{key:"sermonDate",label:"খুতবার তারিখ",type:"date",required:true},{key:"preacher",label:"খতিবের নাম",type:"text",required:true},{key:"sermonSubject",label:"খুতবার বিষয়",type:"text",required:true},{key:"sermonSummary",label:"খুতবার সারসংক্ষেপ",type:"textarea"},{key:"audioUrl",label:"অডিও URL",type:"url"},{key:"videoUrl",label:"ভিডিও URL",type:"url"},{key:"sermonDocument",label:"খুতবার PDF URL",type:"url"}],
+[{key:"foundationName",label:"ফাউন্ডেশনের নাম",type:"text",required:true},{key:"established",label:"প্রতিষ্ঠার তারিখ/সাল",type:"text"},{key:"chairperson",label:"প্রতিষ্ঠাতা/সভাপতি",type:"text"},{key:"mission",label:"প্রতিষ্ঠানের পরিচিতি",type:"textarea",required:true},{key:"officeAddress",label:"কার্যালয়ের ঠিকানা",type:"textarea"},{key:"phone",label:"যোগাযোগ নম্বর",type:"tel"},{key:"websiteUrl",label:"ওয়েবসাইট URL",type:"url"},{key:"foundationLogo",label:"লোগো/প্রচ্ছদ ছবি",type:"image"}],
+[{key:"vision",label:"দীর্ঘমেয়াদি লক্ষ্য",type:"textarea",required:true},{key:"objectives",label:"নির্দিষ্ট উদ্দেশ্যসমূহ",type:"textarea",required:true},{key:"principles",label:"নীতিমালা ও মূল্যবোধ",type:"textarea"},{key:"futurePlan",label:"ভবিষ্যৎ পরিকল্পনা",type:"textarea"},{key:"policyUrl",label:"নীতিমালা/গঠনতন্ত্রের URL",type:"url"}],
+[{key:"programmeName",label:"দরিদ্র পরিবার সহায়তা কর্মসূচির নাম",type:"text",required:true},{key:"eligibility",label:"যোগ্যতার শর্ত",type:"textarea",required:true},{key:"applicationSteps",label:"আবেদনের ধাপ",type:"textarea",required:true},{key:"requiredDocuments",label:"প্রয়োজনীয় কাগজপত্র",type:"textarea"},{key:"supportTypes",label:"সহায়তার ধরন ও পরিমাণ",type:"textarea"},{key:"applicationStart",label:"আবেদন শুরুর তারিখ",type:"date"},{key:"applicationEnd",label:"আবেদনের শেষ তারিখ",type:"date"},{key:"applicationUrl",label:"অনলাইন আবেদন URL",type:"url"},{key:"programmeImage",label:"কর্মসূচির ছবি",type:"image"}],
+[{key:"programmeName",label:"এতিম সহায়তা কর্মসূচির নাম",type:"text",required:true},{key:"ageRange",label:"বয়সসীমা",type:"text"},{key:"eligibility",label:"এতিম সহায়তার যোগ্যতা",type:"textarea",required:true},{key:"supportPlan",label:"শিক্ষা/খাদ্য/বাসস্থান সহায়তার বিবরণ",type:"textarea",required:true},{key:"documents",label:"প্রয়োজনীয় কাগজপত্র",type:"textarea"},{key:"reviewProcess",label:"যাচাই ও নির্বাচন পদ্ধতি",type:"textarea"},{key:"applicationUrl",label:"আবেদন URL",type:"url"},{key:"programmePhoto",label:"কর্মসূচির ছবি",type:"image"}],
+[{key:"scholarshipName",label:"বৃত্তির নাম",type:"text",required:true},{key:"eligibleClasses",label:"যে শ্রেণির শিক্ষার্থীরা আবেদন করতে পারবে",type:"text"},{key:"minimumResult",label:"ন্যূনতম ফলাফল/GPA",type:"text"},{key:"incomeCriteria",label:"পারিবারিক আর্থিক যোগ্যতা",type:"textarea"},{key:"amount",label:"বৃত্তির পরিমাণ",type:"text"},{key:"frequency",label:"বৃত্তি প্রদানের মেয়াদ",type:"select",options:["মাসিক","ত্রৈমাসিক","ষান্মাসিক","বার্ষিক","এককালীন"]},{key:"requiredDocuments",label:"প্রয়োজনীয় কাগজপত্র",type:"textarea"},{key:"applyStart",label:"আবেদন শুরুর তারিখ",type:"date"},{key:"applyEnd",label:"আবেদনের শেষ তারিখ",type:"date"},{key:"applicationUrl",label:"অনলাইন আবেদন URL",type:"url"},{key:"scholarshipNotice",label:"বিজ্ঞপ্তি/PDF URL",type:"url"}],
+[{key:"medicalProgramme",label:"চিকিৎসা সহায়তা কর্মসূচির নাম",type:"text",required:true},{key:"coveredTreatment",label:"যে ধরনের চিকিৎসায় সহায়তা",type:"textarea",required:true},{key:"eligibility",label:"আর্থিক ও চিকিৎসাগত যোগ্যতা",type:"textarea"},{key:"documents",label:"প্রয়োজনীয় কাগজপত্র",type:"textarea"},{key:"supportLimit",label:"সহায়তার সীমা/পরিমাণ",type:"text"},{key:"reviewMethod",label:"আবেদন যাচাই পদ্ধতি",type:"textarea"},{key:"applicationUrl",label:"আবেদন URL",type:"url"},{key:"guidelineUrl",label:"চিকিৎসা নির্দেশিকার URL",type:"url"}],
+[{key:"reliefCampaign",label:"ত্রাণ কর্মসূচির নাম",type:"text",required:true},{key:"disasterType",label:"দুর্যোগের ধরন",type:"select",options:["বন্যা","ঘূর্ণিঝড়","অগ্নিকাণ্ড","শীত","নদীভাঙন","অন্যান্য"]},{key:"affectedArea",label:"ক্ষতিগ্রস্ত এলাকা",type:"text"},{key:"affectedFamilies",label:"ক্ষতিগ্রস্ত পরিবারের সংখ্যা",type:"number"},{key:"reliefItems",label:"ত্রাণসামগ্রীর তালিকা",type:"textarea",required:true},{key:"distributionDate",label:"বিতরণের তারিখ",type:"date"},{key:"volunteerContact",label:"দায়িত্বশীল/স্বেচ্ছাসেবকের যোগাযোগ",type:"tel"},{key:"donationUrl",label:"সহায়তা/অনুদান URL",type:"url"},{key:"fieldPhotos",label:"কার্যক্রমের ছবি",type:"image",multiple:true}]
 ];
-const specialFields={
- 1:[["location","মসজিদের ঠিকানা","text"],["responsible","পরিচালনার দায়িত্বশীল","text"],["media","প্রচ্ছদ/ছবি লিংক","text"]],
- 2:[["location","মসজিদের অবস্থান","text"],["date","প্রতিষ্ঠা/ইতিহাসের সময়কাল","text"],["responsible","তথ্যসূত্র/যাচাইকারী","text"]],
- 3:[["location","মসজিদের ঠিকানা","text"],["responsible","তথ্য যাচাইকারী","text"]],
- 4:[["date","কার্যকর হওয়ার তারিখ","text"],["location","মসজিদ/স্থান","text"],["fajr","ফজরের জামাত","text"],["sunrise","সূর্যোদয়","text"],["dhuhr","যোহরের জামাত","text"],["asr","আসরের জামাত","text"],["maghrib","মাগরিবের জামাত","text"],["isha","এশার জামাত","text"],["responsible","সময়সূচি যাচাইকারী","text"]],
- 5:[["date","কার্যকর হওয়ার তারিখ","text"],["location","স্থান","text"],["fajr","ফজরের আজান","text"],["dhuhr","যোহরের আজান","text"],["asr","আসরের আজান","text"],["maghrib","মাগরিবের আজান","text"],["isha","এশার আজান","text"]],
- 6:[["date","কার্যকর হওয়ার তারিখ","text"],["location","স্থান","text"],["jummaKhutbah","জুমার খুতবার সময়","text"],["jummaJamaat","জুমার জামাতের সময়","text"],["responsible","দায়িত্বশীল ব্যক্তি","text"]],
- 7:[["personName","ইমাম/খতিবের নাম","text"],["designation","পদবি","text"],["phone","মোবাইল নম্বর","text"],["responsibility","দায়িত্ব ও পরিচিতি","textarea"],["media","ছবি/প্রোফাইল লিংক","text"]],
- 8:[["personName","কমিটির সদস্যদের নাম ও তালিকা","textarea"],["designation","পদবি/দায়িত্ব","textarea"],["phone","যোগাযোগ নম্বর","text"],["date","কমিটির মেয়াদকাল","text"]],
- 9:[["date","নোটিশের তারিখ","text"],["deadline","কার্যকর হওয়ার/শেষ তারিখ","text"],["responsible","নোটিশ প্রদানকারী","text"],["media","সংযুক্ত নথি/লিংক","textarea"]],
- 10:[["eventTitle","অনুষ্ঠানের নাম","text"],["date","অনুষ্ঠানের তারিখ","text"],["time","অনুষ্ঠানের সময়","text"],["location","অনুষ্ঠানের স্থান","text"],["responsible","আয়োজক","text"],["media","অনুষ্ঠানের ছবি/লিংক","textarea"]],
- 11:[["media","ছবির সরাসরি লিংক (প্রতি লাইনে একটি)","textarea"],["date","ছবির তারিখ/অনুষ্ঠান","text"]],
- 12:[["media","ভিডিও লিংক (প্রতি লাইনে একটি)","textarea"],["date","ভিডিওর তারিখ/অনুষ্ঠান","text"]],
- 13:[["date","খুতবার তারিখ","text"],["personName","খতিবের নাম","text"],["eventTitle","খুতবার বিষয়","text"],["media","খুতবা/ভিডিওর লিংক","textarea"]],
- 14:[["location","কার্যক্রমের এলাকা","text"],["responsible","দায়িত্বশীল ব্যক্তি/কমিটি","text"]],
- 15:[["responsible","দায়িত্বশীল ব্যক্তি/কমিটি","text"]],
- 16:[["eligibility","সহায়তা পাওয়ার যোগ্যতা","textarea"],["process","আবেদন পদ্ধতি","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["deadline","আবেদনের শেষ তারিখ","text"],["assistanceType","কী ধরনের সহায়তা দেওয়া হয়","textarea"],["responsible","যোগাযোগ/দায়িত্বশীল","text"]],
- 17:[["eligibility","এতিম সহায়তার যোগ্যতা","textarea"],["process","সহায়তা পাওয়ার প্রক্রিয়া","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["deadline","আবেদনের সময়সীমা","text"],["responsible","যোগাযোগ/দায়িত্বশীল","text"]],
- 18:[["eligibility","শিক্ষাবৃত্তির যোগ্যতা","textarea"],["process","আবেদনের নিয়ম","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["deadline","আবেদনের শেষ তারিখ","text"],["assistanceType","বৃত্তির ধরন/পরিমাণ","textarea"],["responsible","যোগাযোগ/দায়িত্বশীল","text"]],
- 19:[["eligibility","চিকিৎসা সহায়তার যোগ্যতা","textarea"],["process","আবেদন পদ্ধতি","textarea"],["documents","প্রয়োজনীয় কাগজপত্র","textarea"],["assistanceType","সহায়তার ধরন","textarea"],["responsible","যোগাযোগ/দায়িত্বশীল","text"]],
- 20:[["eligibility","ত্রাণ পাওয়ার যোগ্যতা/অগ্রাধিকার","textarea"],["process","সহায়তা পাওয়ার প্রক্রিয়া","textarea"],["assistanceType","ত্রাণ/সহায়তার ধরন","textarea"],["deadline","আবেদনের সময়সীমা","text"],["responsible","যোগাযোগ/দায়িত্বশীল","text"]]
-};
-let currentFields=[];
-let sdk,account,teams,tables,currentUser=null,rows=new Map(),loadedContent={};
-function status(message,error=false){const el=$("status");el.textContent=message;el.classList.toggle("error",error);}
-function rowId(n){return "module-"+String(n).padStart(2,"0");}
-function parseContent(raw){
- if(!raw)return {};
- try{const x=JSON.parse(raw);if(x&&typeof x==="object"&&!Array.isArray(x))return x;}catch{}
- return {details:raw};
-}
-function renderFields(data={},n=1){
- const host=$("moduleFields");host.replaceChildren();
- currentFields=[...commonFields,...(specialFields[n]||[])];
- for(const [key,label,type] of currentFields){
-  const wrap=document.createElement("div");wrap.className="field";
-  const lab=document.createElement("label");lab.htmlFor="field-"+key;lab.textContent=label;
-  const input=document.createElement(type==="textarea"?"textarea":"input");
-  input.id="field-"+key;input.name=key;input.value=data[key]||"";
-  if(type==="textarea"){input.rows=key==="media"?4:5;input.maxLength=key==="details"?10000:4000;}
-  else input.maxLength=300;
-  wrap.append(lab,input);host.append(wrap);
+const $=id=>document.getElementById(id),rowId=n=>"module-"+String(n).padStart(2,"0");
+let sdk,account,teams,tables,storage,rows=new Map(),activeSchema=[];
+function status(m,error=false){$("status").textContent=m;$("status").classList.toggle("error",error)}
+function parse(raw){try{return JSON.parse(raw||"{}")}catch{return {}}}
+function showEditor(v){$("loginPanel").classList.toggle("hidden",v);$("editorPanel").classList.toggle("hidden",!v)}
+function counters(){const p=[...rows.values()].filter(r=>r.published).length;$("savedCount").textContent=rows.size;$("publishedCount").textContent=p;$("draftCount").textContent=20-p}
+function renderForm(n,data={}){
+ const host=$("moduleFields");host.replaceChildren();activeSchema=SCHEMAS[n-1];
+ for(const f of activeSchema){
+  const wrap=document.createElement("div");wrap.className="field"+(f.type==="textarea"?" wide":"");
+  const label=document.createElement("label");label.htmlFor="field-"+f.key;label.textContent=f.label+(f.required?" *":"");wrap.append(label);
+  let el;
+  if(f.type==="textarea"){el=document.createElement("textarea");el.rows=4;el.value=data[f.key]||""}
+  else if(f.type==="select"){el=document.createElement("select");const empty=document.createElement("option");empty.value="";empty.textContent="নির্বাচন করুন";el.append(empty);for(const v of f.options){const o=document.createElement("option");o.value=v;o.textContent=v;el.append(o)}el.value=data[f.key]||""}
+  else if(f.type==="image"){el=document.createElement("input");el.type="file";el.accept="image/*";el.multiple=!!f.multiple;const current=document.createElement("small");current.className="form-note";current.textContent=(data[f.key]||[]).length?"আগে আপলোড করা ছবি: "+(data[f.key]||[]).length+"টি":"";wrap.append(el,current)}
+  else{el=document.createElement("input");el.type=f.type==="url"?"url":f.type==="number"?"number":f.type==="date"?"date":f.type==="time"?"time":f.type==="tel"?"tel":"text";el.value=data[f.key]||""}
+  el.id="field-"+f.key;el.name=f.key;el.required=!!f.required;
+  if(f.type==="image")el.dataset.existing=JSON.stringify(data[f.key]||[]);
+  wrap.append(el);
+  if(f.type==="url"){const note=document.createElement("small");note.className="form-note";note.textContent="সম্পূর্ণ https:// URL দিন";wrap.append(note)}
+  host.append(wrap);
  }
 }
-function readFields(){
- const data={};
- for(const [key] of currentFields)data[key]=$("field-"+key).value.trim();
+async function loadAll(){rows.clear();await Promise.all(MODULES.map(async(_,i)=>{try{const r=await tables.getRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:rowId(i+1)});rows.set(rowId(i+1),r)}catch(e){if(e.code!==404)console.warn(e)}}));counters()}
+async function loadSelected(){const n=Number($("moduleSelect").value||1),id=rowId(n);$("moduleNumber").textContent=MODULES[n-1];try{const r=await tables.getRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:id});rows.set(id,r);$("contentTitle").value=r.title||MODULES[n-1];$("published").checked=!!r.published;renderForm(n,parse(r.content));$("moduleStatus").textContent=r.published?"প্রকাশিত":"খসড়া"}catch(e){if(e.code!==404)throw e;rows.delete(id);$("contentTitle").value=MODULES[n-1];$("published").checked=false;renderForm(n);$("moduleStatus").textContent="নতুন তথ্য"}counters()}
+async function uploadImages(n,data){
+ if(!cfg.storageBucketId)throw new Error("ছবি আপলোডের Storage Bucket ID কনফিগার করা হয়নি। সেটআপ নির্দেশনা অনুসরণ করুন।");
+ for(const f of activeSchema.filter(x=>x.type==="image")){
+  const input=$("field-"+f.key),existing=JSON.parse(input.dataset.existing||"[]"),files=[...(input.files||[])];
+  const uploaded=[];
+  for(const file of files){if(!file.type.startsWith("image/"))throw new Error("শুধু ছবি আপলোড করা যাবে: "+file.name);if(file.size>8*1024*1024)throw new Error("প্রতিটি ছবির সর্বোচ্চ আকার ৮ MB: "+file.name);
+   const result=await storage.createFile({bucketId:cfg.storageBucketId,fileId:sdk.ID.unique(),file,permissions:[sdk.Permission.read(sdk.Role.any())]});
+   uploaded.push({fileId:result.$id,name:result.name,mimeType:result.mimeType,size:result.sizeOriginal});
+  }
+  data[f.key]=[...existing,...uploaded];
+ }
  return data;
 }
-function showEditor(show){
- $("loginPanel").classList.toggle("hidden",show);
- $("editorPanel").classList.toggle("hidden",!show);
-}
-function setCounters(){
- const published=[...rows.values()].filter(x=>x.published).length;
- $("publishedCount").textContent=published;
- $("draftCount").textContent=Math.max(0,20-published);
- $("savedCount").textContent=rows.size;
-}
-async function requireAdmin(){
- currentUser=await account.get();
- const result=await teams.listMemberships({teamId:cfg.adminTeamId});
- const membership=(result.memberships||[]).find(m=>m.userId===currentUser.$id&&m.confirm===true);
- if(!membership)throw new Error("এই অ্যাকাউন্টটি Mosque 20 Admins টিমের নিশ্চিত সদস্য নয়।");
- showEditor(true);
- $("welcome").textContent="স্বাগতম, "+(currentUser.name||currentUser.email);
- await loadAllRows();
- await loadSelected();
-}
-async function loadAllRows(){
- rows.clear();
- await Promise.all(MODULES.map(async(_,i)=>{
-  const id=rowId(i+1);
-  try{const row=await tables.getRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:id});rows.set(id,row);}catch(e){if(e.code!==404)console.warn("Module read",id,e);}
- }));
- setCounters();
-}
-async function loadSelected(){
- const n=Number($("moduleSelect").value||1),id=rowId(n);
- $("moduleNumber").textContent=MODULES[n-1];
- $("moduleStatus").textContent="তথ্য লোড হচ্ছে…";
- try{
-  const row=await tables.getRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:id});
-  rows.set(id,row);const content=parseContent(row.content);
-  $("contentTitle").value=row.title||MODULES[n-1];
-  renderFields(content,n);$("published").checked=!!row.published;
-  $("moduleStatus").textContent=row.published?"প্রকাশিত":"খসড়া / এখনো প্রকাশিত নয়";
- }catch(e){
-  if(e.code===404){
-   rows.delete(id);$("contentTitle").value=MODULES[n-1];renderFields({},n);
-   $("published").checked=false;$("moduleStatus").textContent="এখনো তথ্য সংরক্ষণ করা হয়নি।";
-  }else throw e;
- }
- setCounters();
-}
-function friendlyError(e){
- const code=e?.code?(" ("+e.code+")"):"";
- if(e?.code===401)return "লগইন সেশন শেষ হয়েছে অথবা ইমেইল/পাসওয়ার্ড সঠিক নয়। আবার লগইন করুন।";
- if(e?.code===403)return "অনুমতি নেই। Appwrite Table-এ Mosque 20 Admins Team-এর Create/Read/Update permission পরীক্ষা করুন।";
- if(e?.code===404)return "Appwrite-এ প্রয়োজনীয় Table/Row পাওয়া যায়নি। Project, Database ও Table ID পরীক্ষা করুন।";
- return (e?.message||String(e))+code;
-}
 async function start(){
- if(!cfg.endpoint||!cfg.projectId||!cfg.databaseId||!cfg.tableId||!cfg.adminTeamId){status("Appwrite কনফিগারেশন অসম্পূর্ণ।",true);return;}
- status("নিরাপদ প্রশাসনিক সংযোগ প্রস্তুত হচ্ছে…");
+ if(!cfg.endpoint||!cfg.projectId||!cfg.databaseId||!cfg.tableId||!cfg.adminTeamId){status("Appwrite কনফিগারেশন অসম্পূর্ণ।",true);return}
  try{
   sdk=await import("https://cdn.jsdelivr.net/npm/appwrite@29.2.0/+esm");
-  const {Client,Account,Teams,TablesDB}=sdk;
-  if(!TablesDB)throw new Error("এই SDK-তে TablesDB পাওয়া যায়নি। SDK সংস্করণ পরীক্ষা করুন।");
-  const client=new Client().setEndpoint(cfg.endpoint).setProject(cfg.projectId);
-  account=new Account(client);teams=new Teams(client);tables=new TablesDB(client);
+  const client=new sdk.Client().setEndpoint(cfg.endpoint).setProject(cfg.projectId);
+  account=new sdk.Account(client);teams=new sdk.Teams(client);tables=new sdk.TablesDB(client);storage=new sdk.Storage(client);
   $("moduleSelect").innerHTML=MODULES.map((m,i)=>'<option value="'+(i+1)+'">'+m+'</option>').join("");
-  $("moduleSelect").addEventListener("change",()=>loadSelected().catch(e=>status("তথ্য লোড হয়নি: "+friendlyError(e),true)));
-  $("loginForm").addEventListener("submit",async e=>{
-   e.preventDefault();const btn=$("loginBtn");btn.disabled=true;status("লগইন যাচাই হচ্ছে…");
-   try{await account.createEmailPasswordSession({email:$("email").value.trim(),password:$("password").value});await requireAdmin();status("প্রশাসনিক প্যানেল চালু হয়েছে।");}
-   catch(err){status("লগইন ব্যর্থ: "+friendlyError(err),true);}
-   finally{btn.disabled=false;}
-  });
-  $("contentForm").addEventListener("submit",async e=>{
-   e.preventDefault();const n=Number($("moduleSelect").value),id=rowId(n);
-   const title=$("contentTitle").value.trim();if(!title){status("শিরোনাম লিখুন।",true);return;}
-   const data={moduleId:n,title,content:JSON.stringify(readFields()),published:$("published").checked};
-   const btn=$("saveBtn");btn.disabled=true;status("তথ্য সংরক্ষণ হচ্ছে…");
-   try{
-    if(rows.has(id))await tables.updateRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:id,data});
-    else await tables.createRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:id,data});
-    await loadAllRows();await loadSelected();status("তথ্য সফলভাবে সংরক্ষিত হয়েছে।");
-   }catch(err){status("সংরক্ষণ হয়নি: "+friendlyError(err),true);}
-   finally{btn.disabled=false;}
-  });
-  $("refreshBtn").addEventListener("click",async()=>{try{await loadAllRows();await loadSelected();status("তথ্য হালনাগাদ হয়েছে।");}catch(e){status(friendlyError(e),true);}});
-  $("logoutBtn").addEventListener("click",async()=>{
-   try{await account.deleteSession({sessionId:"current"});}catch{}
-   currentUser=null;showEditor(false);$("password").value="";status("লগআউট সম্পন্ন হয়েছে।");
-  });
-  try{await requireAdmin();status("প্রশাসনিক প্যানেল প্রস্তুত।");}
-  catch(e){showEditor(false);if(e.code===401)status("প্রশাসকের ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করুন।");else status("প্রশাসক যাচাই: "+friendlyError(e),true);}
- }catch(e){status("প্রশাসনিক ব্যবস্থা চালু হয়নি: "+friendlyError(e),true);}
+  $("moduleSelect").addEventListener("change",()=>loadSelected().catch(e=>status("তথ্য লোড হয়নি: "+e.message,true)));
+  $("loginForm").addEventListener("submit",async e=>{e.preventDefault();$("loginBtn").disabled=true;try{await account.createEmailPasswordSession({email:$("email").value.trim(),password:$("password").value});const user=await account.get(),res=await teams.listMemberships({teamId:cfg.adminTeamId});if(!(res.memberships||[]).some(m=>m.userId===user.$id&&m.confirm===true))throw new Error("এই অ্যাকাউন্টটি প্রশাসক টিমের নিশ্চিত সদস্য নয়।");showEditor(true);$("welcome").textContent="স্বাগতম, "+(user.name||user.email);await loadAll();await loadSelected();status("প্রশাসনিক প্যানেল প্রস্তুত।")}catch(e){status("লগইন/অনুমতি সমস্যা: "+(e.message||e),true)}finally{$("loginBtn").disabled=false}});
+  $("contentForm").addEventListener("submit",async e=>{e.preventDefault();const n=Number($("moduleSelect").value),id=rowId(n),data={};for(const f of activeSchema){const el=$("field-"+f.key);if(f.type==="image")continue;data[f.key]=el.value.trim()}const btn=$("saveBtn");btn.disabled=true;try{await uploadImages(n,data);const payload={moduleId:n,title:$("contentTitle").value.trim()||MODULES[n-1],content:JSON.stringify(data),published:$("published").checked};if(rows.has(id))await tables.updateRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:id,data:payload});else await tables.createRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:id,data:payload});await loadAll();await loadSelected();status("এই মডিউলের তথ্য সংরক্ষণ হয়েছে।")}catch(e){status("সংরক্ষণ হয়নি: "+(e.message||e),true)}finally{btn.disabled=false}});
+  $("refreshBtn").addEventListener("click",async()=>{try{await loadAll();await loadSelected();status("তথ্য হালনাগাদ হয়েছে।")}catch(e){status(e.message,true)}});
+  $("logoutBtn").addEventListener("click",async()=>{try{await account.deleteSession({sessionId:"current"})}catch{}showEditor(false);$("password").value="";status("লগআউট হয়েছে।")});
+  try{const user=await account.get(),res=await teams.listMemberships({teamId:cfg.adminTeamId});if((res.memberships||[]).some(m=>m.userId===user.$id&&m.confirm===true)){showEditor(true);$("welcome").textContent="স্বাগতম, "+(user.name||user.email);await loadAll();await loadSelected();status("প্রশাসনিক প্যানেল প্রস্তুত।")}else{showEditor(false);status("প্রশাসকের ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করুন।")}}catch{showEditor(false);status("প্রশাসকের ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করুন।")}
+ }catch(e){status("প্রশাসনিক ব্যবস্থা চালু হয়নি: "+(e.message||e),true)}
 }
 start();
