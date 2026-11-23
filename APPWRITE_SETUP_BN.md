@@ -59,4 +59,7 @@
 
 ## এই সংস্করণের সীমাবদ্ধতা
 
-বর্তমান Admin panel ২০টি মডিউলের শিরোনাম, লেখা এবং প্রকাশ/অপ্রকাশ নিয়ন্ত্রণ করে। ফটো/ভিডিও upload, সহায়তার আবেদন ফর্ম, শিক্ষাবৃত্তির পূর্ণ workflow, আর্থিক হিসাব, donation/payment gateway এবং আলাদা staff permission এখনো তৈরি হয়নি।
+- ছবি/ভিডিও সরাসরি upload নয়; আপাতত প্রকাশ্য HTTPS লিংক দিতে হবে। সরাসরি upload-এর জন্য Appwrite Storage bucket তৈরি ও অনুমতি কনফিগার করা প্রয়োজন।
+- দরিদ্র পরিবার, এতিম, শিক্ষাবৃত্তি ও চিকিৎসা সহায়তার আবেদন গ্রহণের জন্য আলাদা private table দরকার। ব্যক্তিগত তথ্য বর্তমান public-readable `site_content` table-এ রাখা নিরাপদ নয়; তাই আবেদন জমা/যাচাই workflow এখনো চালু করা হয়নি।
+- Donation/payment gateway, হিসাবরক্ষণ ও আলাদা staff role workflow এখনো চালু নয়।
+- বর্তমান admin dashboard কেবল প্রকাশযোগ্য website content সম্পাদনা করে।
