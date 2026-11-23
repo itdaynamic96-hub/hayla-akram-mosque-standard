@@ -6,7 +6,9 @@ document.title=item[0]+" | সাকছিপাড়া শায়লা আকর
 function addText(parent,tag,text,className){const el=document.createElement(tag);el.textContent=text;if(className)el.className=className;parent.append(el);return el;}
 function renderContent(data){
  const host=$("moduleContent");host.replaceChildren();
- const fields=[["summary","সংক্ষিপ্ত পরিচিতি"],["details","বিস্তারিত তথ্য"],["date","তারিখ"],["time","সময়"],["location","স্থান/ঠিকানা"],["responsible","দায়িত্বশীল ব্যক্তি/কমিটি"],["eligibility","যোগ্যতা/শর্ত"],["process","আবেদন/অংশগ্রহণের নিয়ম"],["contact","যোগাযোগ"]];
+ const fields=[["summary","সংক্ষিপ্ত পরিচিতি"],["details","বিস্তারিত তথ্য"],["date","তারিখ"],["time","সময়"],["location","স্থান/ঠিকানা"],["responsible","দায়িত্বশীল ব্যক্তি/কমিটি"],["eligibility","যোগ্যতা/শর্ত"],["process","আবেদন/অংশগ্রহণের নিয়ম"],["documents","প্রয়োজনীয় কাগজপত্র"],["deadline","শেষ তারিখ"],["assistanceType","সহায়তার ধরন"],["personName","নাম/সদস্য"],["designation","পদবি"],["phone","মোবাইল নম্বর"],["responsibility","দায়িত্ব ও পরিচিতি"],["eventTitle","অনুষ্ঠান/বিষয়"],["contact","যোগাযোগ"]];
+ const schedule=[["fajr","ফজর"],["sunrise","সূর্যোদয়"],["dhuhr","যোহর"],["asr","আসর"],["maghrib","মাগরিব"],["isha","এশা"],["jummaKhutbah","জুমার খুতবা"],["jummaJamaat","জুমার জামাত"]];
+ for(const [key,label] of schedule){if(data[key]){has=true;addText(host,"h3",label);addText(host,"p",data[key]);}}
  let has=false;
  for(const [key,label] of fields){if(data[key]){has=true;addText(host,"h3",label);const p=addText(host,"p",data[key]);p.style.whiteSpace="pre-wrap";}}
  if(data.media){const urls=data.media.split(/\n+/).map(x=>x.trim()).filter(Boolean);if(urls.length){has=true;addText(host,"h3","ছবি, ভিডিও ও প্রয়োজনীয় লিংক");const list=document.createElement("ul");for(const value of urls){try{const u=new URL(value);if(!["https:","http:"].includes(u.protocol))continue;const li=document.createElement("li"),a=document.createElement("a");a.href=u.href;a.target="_blank";a.rel="noopener noreferrer";a.textContent=u.href;li.append(a);list.append(li);}catch{}}host.append(list);}}
