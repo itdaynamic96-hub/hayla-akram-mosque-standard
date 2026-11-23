@@ -4,5 +4,6 @@ window.MOSQUE_APPWRITE_CONFIG = {
   projectId: "6b0419d80025c3eb9434",
   databaseId: "6b041d590028b371b760",
   tableId: "site_content",
-  adminTeamId: "mosque20_admins"
+  adminTeamId: "mosque20_admins",
+  storageBucketId: "mosque20_media"
 };
