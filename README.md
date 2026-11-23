@@ -2,9 +2,9 @@
 
 A separate 20-module mosque and foundation website.
 
-## Public website sections (20 modules)
+## ২০টি মডিউল
 
-### Mosque — 13
+### মসজিদ — ১৩টি
 1. হোমপেজ
 2. মসজিদের পরিচিতি
 3. মসজিদের ইতিহাস
@@ -19,7 +19,7 @@ A separate 20-module mosque and foundation website.
 12. ভিডিও গ্যালারি
 13. জুমার খুতবা আর্কাইভ
 
-### Foundation — 7
+### ফাউন্ডেশন — ৭টি
 14. ফাউন্ডেশন পরিচিতি
 15. লক্ষ্য ও উদ্দেশ্য
 16. দরিদ্র পরিবার সহায়তা
@@ -28,15 +28,31 @@ A separate 20-module mosque and foundation website.
 19. চিকিৎসা সহায়তা
 20. দুর্যোগ ও ত্রাণ কার্যক্রম
 
-## Current implementation status
+## Implemented
 
-- Responsive Bengali public landing page implemented.
-- Prayer schedule currently contains clearly labelled example times only.
-- Foundation overview cards implemented.
-- Notice, events and gallery sections are placeholders pending verified content.
-- Appwrite database/authentication/storage integration and admin workflows are not yet connected.
-- No secrets or API keys are included in this repository.
+- Responsive Bengali public homepage.
+- Exactly 20 module links and module detail routes.
+- Appwrite client configuration placeholder for a **new, separate project**.
+- Admin login page restricted in code to members of a configured Appwrite Team.
+- Admin editor can create/update title, text content, and publish/unpublish state for each module.
+- Public module pages load published text content from Appwrite.
+- Setup guide: [APPWRITE_SETUP_BN.md](APPWRITE_SETUP_BN.md).
 
-## Run locally
+## Not yet connected / not yet verified
 
-Open `index.html` in a browser or serve this directory with any static web server.
+- A new Appwrite Project, Database, Table, and Admin Team must first be created in the Appwrite Console.
+- The new Project ID, Database ID, and Team ID must be entered in `appwrite-config.js`.
+- The website hosting URL must be added as an Appwrite Web platform.
+- Appwrite permissions must be configured exactly as described in the setup guide.
+- No real prayer times, historical facts, contact details, or other factual mosque content have been invented.
+- Photo/video upload, aid application forms, scholarship workflow, donation/payment processing, accounting, and fine-grained staff roles are not included in this first admin editor.
+
+## Security notes
+
+- Never put an Appwrite API key or server secret in browser files or GitHub.
+- Public users receive read-only access. Only the configured Appwrite Admin Team should receive create/update/delete permissions.
+- Do not reuse the old 15-module or 60-module project credentials or databases.
+
+## Local preview
+
+Open `index.html` in a browser. Appwrite-backed pages require the Appwrite setup steps above and a web origin registered in Appwrite.
