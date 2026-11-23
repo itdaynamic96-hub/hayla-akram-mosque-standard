@@ -22,3 +22,18 @@
 /* Gallery post management and presentation */
 .gallery-post-panel{margin-top:24px;padding-top:18px;border-top:1px solid #e4ebe6}.saved-post-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.saved-post{padding:12px;border:1px solid #e4ebe6;border-radius:7px;background:#f8faf8}.saved-post b,.saved-post small{display:block}.saved-post p{margin:3px 0;color:#687872}.gallery-post{padding:18px 0;border-bottom:1px solid #e4ebe6}.gallery-post-title{margin:0 0 6px}.gallery-media-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:14px 0}.gallery-media-grid img{width:100%;height:230px;object-fit:cover;border-radius:8px}.gallery-post video{width:100%;max-width:900px;max-height:520px;background:#000;border-radius:8px;margin:12px 0}
 @media(max-width:650px){.saved-post-list{grid-template-columns:1fr}}
+
+/* Homepage: automatically display every published department entry */
+.published-feed{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.published-card{min-width:0;padding:20px;border:1px solid #e5ece7;border-radius:9px;background:#fff;box-shadow:0 5px 18px #12310b08}
+.published-category{display:inline-block;padding:3px 10px;border-radius:20px;background:#edf4ef;color:var(--green);font-size:12px;font-weight:700}
+.published-card h3{margin:10px 0 3px;color:var(--green);font-size:19px;line-height:1.45}
+.published-date{display:block;color:var(--muted);font-size:12px;margin-bottom:9px}
+.published-field{font-size:14px;color:#52635b;margin:7px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.published-field b{color:#31483d}
+.published-field a,.published-more{color:var(--green);font-weight:600}
+.published-image{display:block;width:100%;max-height:230px;object-fit:cover;border-radius:7px;margin-top:10px}
+.published-video{display:block;width:100%;max-height:260px;background:#000;border-radius:7px;margin-top:10px}
+.published-more{display:inline-block;margin-top:12px;text-decoration:none;font-size:14px}
+@media(max-width:850px){.published-feed{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.published-feed{grid-template-columns:1fr}}
