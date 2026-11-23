@@ -2,7 +2,7 @@
 window.MOSQUE_APPWRITE_CONFIG = {
   endpoint: "https://sgp.cloud.appwrite.io/v1",
   projectId: "6b0419d80025c3eb9434",
-  databaseId: "PASTE_NEW_DATABASE_ID",
+  databaseId: "6b041d590028b371b760",
   tableId: "site_content",
-  adminTeamId: "PASTE_NEW_ADMIN_TEAM_ID"
+  adminTeamId: "mosque20_admins"
 };
