@@ -16,3 +16,5 @@
   .dropdown-menu{position:static;max-height:none;box-shadow:none;border:0;border-left:2px solid var(--gold);border-radius:0;margin:0 0 5px 10px;padding:3px 8px}
   .dropdown-menu a{white-space:normal;padding:6px 10px}
 }
+
+.cards a.info-card{display:block;text-decoration:none;color:inherit;transition:transform .18s,border-color .18s}.cards a.info-card:hover{transform:translateY(-3px);border-color:var(--gold)}.info-card a{color:var(--green);font-weight:600}
