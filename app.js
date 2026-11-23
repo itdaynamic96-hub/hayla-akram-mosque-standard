@@ -12,11 +12,52 @@ function parse(raw){const value=Array.isArray(raw)?(raw[0]||"{}"):(raw||"{}");tr
 function fillText(id,value){const el=document.getElementById(id);if(el&&value)el.textContent=value;}
 function titleText(value,fallback=""){return Array.isArray(value)?(value.filter(Boolean).join(" ")||fallback):(value||fallback)}
 function card(parent,icon,title,description,href){const a=document.createElement("a");a.className="info-card";a.href=href;const i=document.createElement("span");i.textContent=icon;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.textContent=description;a.append(i,h,p);parent.append(a);}
+
+const moduleNames=["হোমপেজ","মসজিদের পরিচিতি","মসজিদের ইতিহাস","নামাজের সময়সূচি","আজানের সময়সূচি","জুমার নামাজের সময়","ইমাম ও খতিব পরিচিতি","পরিচালনা কমিটি","নোটিশ বোর্ড","অনুষ্ঠানসূচি","ফটো গ্যালারি","ভিডিও গ্যালারি","জুমার খুতবা আর্কাইভ","ফাউন্ডেশন পরিচিতি","লক্ষ্য ও উদ্দেশ্য","দরিদ্র পরিবার সহায়তা","এতিম সহায়তা","শিক্ষাবৃত্তি ব্যবস্থাপনা","চিকিৎসা সহায়তা","দুর্যোগ ও ত্রাণ কার্যক্রম"];
+const fieldNames={intro:"পরিচিতি",summary:"সারসংক্ষেপ",details:"বিস্তারিত",effectiveDate:"কার্যকর তারিখ",fajr:"ফজর",sunrise:"সূর্যোদয়",dhuhr:"যোহর",asr:"আসর",maghrib:"মাগরিব",isha:"এশা",subject:"বিষয়",noticeDate:"তারিখ",noticeBody:"বিজ্ঞপ্তি",deadline:"শেষ তারিখ",eventName:"অনুষ্ঠান",eventDate:"তারিখ",startTime:"শুরুর সময়",venue:"স্থান",eventDetails:"বিবরণ",albumTitle:"অ্যালবাম",photoDate:"ছবির তারিখ",photoCaption:"বিবরণ",videoTitle:"ভিডিও",videoDate:"ভিডিওর তারিখ",videoDescription:"বিবরণ",mission:"পরিচিতি",vision:"লক্ষ্য",objectives:"উদ্দেশ্য",principles:"নীতিমালা",programmeName:"কর্মসূচি",eligibility:"যোগ্যতা",applicationSteps:"আবেদনের ধাপ",supportTypes:"সহায়তার ধরন",scholarshipName:"বৃত্তির নাম",amount:"সহায়তার পরিমাণ",medicalProgramme:"চিকিৎসা কর্মসূচি",coveredTreatment:"চিকিৎসার ধরন",reliefCampaign:"ত্রাণ কর্মসূচি",reliefItems:"ত্রাণসামগ্রী",affectedArea:"ক্ষতিগ্রস্ত এলাকা",personName:"নাম",role:"দায়িত্ব",phone:"যোগাযোগ"};
+function appendFeedValue(host,label,value){
+ const line=document.createElement("p");line.className="published-field";const b=document.createElement("b");b.textContent=label+": ";line.append(b);
+ if(/^https?:\/\//i.test(value)){const a=document.createElement("a");a.href=value;a.target="_blank";a.rel="noopener noreferrer";a.textContent="লিংক দেখুন";line.append(a)}else line.append(document.createTextNode(value));
+ host.append(line);
+}
+async function loadPublishedFeed(db,storage,cfg,Query){
+ const host=document.getElementById("publishedFeed");if(!host)return;
+ try{
+  const result=await db.listRows({databaseId:cfg.databaseId,tableId:cfg.tableId,queries:[Query.equal("published",true),Query.orderDesc("$updatedAt"),Query.limit(100)]});
+  const posts=(result.rows||[]).filter(r=>r.published).sort((a,b)=>String(b.$updatedAt||"").localeCompare(String(a.$updatedAt||"")));
+  host.replaceChildren();
+  if(!posts.length){const empty=document.createElement("p");empty.className="empty-state";empty.textContent="এখনো কোনো তথ্য প্রকাশ করা হয়নি।";host.append(empty);return}
+  for(const row of posts){
+   const n=Number(row.moduleId)||1,d=parse(row.content),article=document.createElement("article");article.className="published-card";
+   const tag=document.createElement("span");tag.className="published-category";tag.textContent=moduleNames[n-1]||"প্রকাশিত তথ্য";article.append(tag);
+   const h=document.createElement("h3");h.textContent=titleText(row.title,moduleNames[n-1]||"প্রকাশিত তথ্য");article.append(h);
+   const date=d.photoDate||d.videoDate||d.noticeDate||d.eventDate||d.distributionDate||d.sermonDate||d.effectiveDate||"";
+   if(date){const time=document.createElement("small");time.className="published-date";time.textContent="তারিখ: "+date;article.append(time)}
+   let fields=0;
+   for(const [key,value] of Object.entries(d)){
+    if(!value||key==="videoFile"||key==="photos"||key==="thumbnail"||key==="fieldPhotos"||key==="eventPoster"||key==="noticeImage"||key==="foundationLogo"||key==="programmeImage"||key==="programmePhoto"||key==="committeePhoto"||key==="photoDate"||key==="videoDate"||key==="noticeDate"||key==="eventDate"||key==="distributionDate"||key==="sermonDate")continue;
+    if(Array.isArray(value)){if(value.every(x=>x&&x.fileId))continue;const txt=value.filter(x=>typeof x==="string").join(", ");if(txt){appendFeedValue(article,fieldNames[key]||key,txt);fields++}continue}
+    if(typeof value==="string"||typeof value==="number"||typeof value==="boolean"){appendFeedValue(article,fieldNames[key]||key,String(value));fields++}
+   }
+   const media=Object.values(d).flat().filter(x=>x&&x.fileId&&x.mimeType);
+   for(const file of media){
+    try{const url=storage.getFileView({bucketId:cfg.storageBucketId,fileId:file.fileId});
+     if(file.mimeType.startsWith("image/")){const img=document.createElement("img");img.className="published-image";img.src=url;img.alt=file.name||"প্রকাশিত ছবি";img.loading="lazy";article.append(img)}
+     else if(file.mimeType.startsWith("video/")){const video=document.createElement("video");video.className="published-video";video.src=url;video.controls=true;video.preload="metadata";video.playsInline=true;article.append(video)}
+    }catch(e){/* Keep text available if a media preview cannot load. */}
+   }
+   const link=document.createElement("a");link.className="published-more";link.href="module.html?id="+n;link.textContent="বিস্তারিত দেখুন →";article.append(link);host.append(article);
+  }
+ }catch(e){host.replaceChildren();const err=document.createElement("p");err.className="empty-state";err.textContent="প্রকাশিত তথ্য এখন লোড করা যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।";host.append(err);console.error("Homepage published feed:",e)}
+}
+
 async function loadHomepage(){
  const cfg=window.MOSQUE_APPWRITE_CONFIG||{};if(!cfg.projectId||!cfg.databaseId||!cfg.tableId)return;
  try{
-  const {Client,TablesDB}=await import("https://cdn.jsdelivr.net/npm/appwrite@29.2.0/+esm");
-  const db=new TablesDB(new Client().setEndpoint(cfg.endpoint).setProject(cfg.projectId));
+  const {Client,TablesDB,Storage,Query}=await import("https://cdn.jsdelivr.net/npm/appwrite@29.2.0/+esm");
+  const client=new Client().setEndpoint(cfg.endpoint).setProject(cfg.projectId);
+  const db=new TablesDB(client),storage=new Storage(client);
+  await loadPublishedFeed(db,storage,cfg,Query);
   const ids=[1,4,9,10,14,15,16,17,18,19,20];
   const records=await Promise.all(ids.map(async n=>{try{return await db.getRow({databaseId:cfg.databaseId,tableId:cfg.tableId,rowId:"module-"+String(n).padStart(2,"0")});}catch{return null;}}));
   const byId=new Map(records.filter(x=>x&&x.published).map(x=>[x.moduleId||Number(x.$id.slice(-2)),x]));
