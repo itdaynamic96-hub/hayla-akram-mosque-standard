@@ -27,6 +27,9 @@ async function loadPublishedFeed(db,storage,cfg,Query){
   const posts=(result.rows||[]).filter(r=>r.published).sort((a,b)=>String(b.$updatedAt||"").localeCompare(String(a.$updatedAt||"")));
   host.replaceChildren();
   if(!posts.length){const empty=document.createElement("p");empty.className="empty-state";empty.textContent="এখনো কোনো তথ্য প্রকাশ করা হয়নি।";host.append(empty);return}
+  const liveModules=new Set(posts.map(r=>Number(r.moduleId)));
+  const sampleModules=moduleNames.map((name,index)=>({$id:"sample-"+(index+1),moduleId:index+1,title:["নমুনা তথ্য — "+name],content:[JSON.stringify({sampleLabel:"নমুনা তথ্য",details:"এই বিভাগে "+name+" সংক্রান্ত যাচাইকৃত তথ্য প্রশাসক প্রকাশ করবেন। এটি কেবল প্রদর্শন ও কনটেন্ট প্রস্তুতির নমুনা; কোনো বাস্তব ঘটনা, ব্যক্তি, সময়সূচি বা আর্থিক হিসাব নয়।"})],published:true,$updatedAt:""})).filter(r=>!liveModules.has(r.moduleId));
+  posts.push(...sampleModules);
   for(const row of posts){
    const n=Number(row.moduleId)||1,d=parse(row.content),article=document.createElement("article");article.className="published-card";
    const tag=document.createElement("span");tag.className="published-category";tag.textContent=moduleNames[n-1]||"প্রকাশিত তথ্য";article.append(tag);
