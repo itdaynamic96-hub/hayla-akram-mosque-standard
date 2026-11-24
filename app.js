@@ -23,7 +23,7 @@ function appendFeedValue(host,label,value){
 async function loadPublishedFeed(db,storage,cfg,Query){
  const host=document.getElementById("publishedFeed");if(!host)return;
  try{
-  const result=await db.listRows({databaseId:cfg.databaseId,tableId:cfg.tableId,queries:[Query.equal("published",true),Query.orderDesc("$updatedAt"),Query.limit(100)]});
+  const result=await db.listRows({databaseId:cfg.databaseId,tableId:cfg.tableId,queries:[Query.equal("published",true),Query.orderDesc("$updatedAt"),Query.limit(500)]});
   const posts=(result.rows||[]).filter(r=>r.published).sort((a,b)=>String(b.$updatedAt||"").localeCompare(String(a.$updatedAt||"")));
   host.replaceChildren();
   if(!posts.length){const empty=document.createElement("p");empty.className="empty-state";empty.textContent="এখনো কোনো তথ্য প্রকাশ করা হয়নি।";host.append(empty);return}
