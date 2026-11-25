@@ -34,6 +34,9 @@ jobs:
       - name: Test media limits and YouTube URL handling
         run: node --test tests/media-helpers.test.js
 
+      - name: Check Appwrite public API connection (non-blocking)
+        run: node scripts/check-appwrite-public-api.mjs
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
