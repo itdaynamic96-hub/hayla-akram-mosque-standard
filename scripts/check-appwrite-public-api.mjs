@@ -11,7 +11,7 @@ const projectId = get("projectId");
 const databaseId = get("databaseId");
 const tableId = get("tableId");
 const origin = "https://itdaynamic96-hub.github.io";
-const url = new URL(endpoint + "/databases/" + encodeURIComponent(databaseId) + "/tables/" + encodeURIComponent(tableId) + "/rows");
+const url = new URL(endpoint + "/tablesdb/" + encodeURIComponent(databaseId) + "/tables/" + encodeURIComponent(tableId) + "/rows");
 url.searchParams.append("queries[]", "limit(1)");
 try {
   const response = await fetch(url, {
