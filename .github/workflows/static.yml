@@ -31,6 +31,9 @@ jobs:
           node --check app.js
           node --check --input-type=module < module.js
 
+      - name: Test media limits and YouTube URL handling
+        run: node --test tests/media-helpers.test.js
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
