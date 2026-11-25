@@ -30,6 +30,7 @@ jobs:
           node --check --input-type=module < admin.js
           node --check --input-type=module < app.js
           node --check --input-type=module < module.js
+          node --check --input-type=module < scripts/check-appwrite-public-api.mjs
 
       - name: Test media limits and YouTube URL handling
         run: node --test tests/media-helpers.test.js
