@@ -27,8 +27,8 @@ jobs:
 
       - name: Validate JavaScript syntax
         run: |
-          node --check admin.js
-          node --check app.js
+          node --check --input-type=module < admin.js
+          node --check --input-type=module < app.js
           node --check --input-type=module < module.js
 
       - name: Test media limits and YouTube URL handling
