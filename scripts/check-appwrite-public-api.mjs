@@ -25,7 +25,7 @@ try {
     console.log("Appwrite public TablesDB API reachable: HTTP " + response.status + "; sample rows returned: " + rowCount);
   } else {
     const rawDetail = await response.text();
-    const detail = rawDetail.replace(/<style[\\s\\S]*?<\\/style>/gi, " ").replace(/<script[\\s\\S]*?<\\/script>/gi, " ").replace(/<[^>]+>/g, " ").replace(/\\s+/g, " ").trim().slice(-700);
+    const detail = rawDetail.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(-700);
     console.warn("Appwrite public TablesDB API returned HTTP " + response.status + ": " + detail);
   }
   if (allowOrigin === origin || allowOrigin === "*") {
