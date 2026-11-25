@@ -26,12 +26,12 @@ export function getYouTubeEmbedUrl(value) {
   try {
     const url = new URL(String(value || "").trim());
     if (url.protocol !== "https:" && url.protocol !== "http:") return null;
-    const host = url.hostname.toLowerCase().replace(/^www\\./, "");
+    const host = url.hostname.toLowerCase().replace(/^www\./, "");
     let id = "";
     if (host === "youtu.be") id = url.pathname.split("/").filter(Boolean)[0] || "";
     else if (host === "youtube.com" || host === "m.youtube.com" || host === "youtube-nocookie.com") {
       if (url.pathname === "/watch") id = url.searchParams.get("v") || "";
-      else if (/^\\/(embed|shorts)\\//.test(url.pathname)) id = url.pathname.split("/").filter(Boolean)[1] || "";
+      else if (/^\/(embed|shorts)\//.test(url.pathname)) id = url.pathname.split("/").filter(Boolean)[1] || "";
     } else return null;
     if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return null;
     return "https://www.youtube-nocookie.com/embed/" + id;
