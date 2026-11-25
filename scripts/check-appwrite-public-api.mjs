@@ -24,7 +24,8 @@ try {
     rowCount = Array.isArray(body.rows) ? body.rows.length : "unknown";
     console.log("Appwrite public TablesDB API reachable: HTTP " + response.status + "; sample rows returned: " + rowCount);
   } else {
-    console.warn("Appwrite public TablesDB API returned HTTP " + response.status + ". Check database/table permissions and project configuration.");
+    const detail = (await response.text()).slice(0, 1000);
+    console.warn("Appwrite public TablesDB API returned HTTP " + response.status + ": " + detail);
   }
   if (allowOrigin === origin || allowOrigin === "*") {
     console.log("Appwrite CORS response includes the GitHub Pages origin.");
