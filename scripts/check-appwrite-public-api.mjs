@@ -33,6 +33,20 @@ try {
   } else {
     console.warn("Appwrite CORS origin was not confirmed in this non-browser check. Ensure the Web Platform hostname is registered: itdaynamic96-hub.github.io");
   }
+
+  const bucketId = get("storageBucketId");
+  const bucketResponse = await fetch(endpoint + "/storage/buckets/" + encodeURIComponent(bucketId), {
+    headers: { "X-Appwrite-Project": projectId, "Origin": origin }
+  });
+  if (bucketResponse.ok) {
+    const bucket = await bucketResponse.json();
+    console.log("Appwrite Storage bucket reachable: " + bucketId +
+      "; maximumFileSize=" + bucket.maximumFileSize +
+      "; allowedFileExtensions=" + JSON.stringify(bucket.allowedFileExtensions || []));
+  } else {
+    console.warn("Appwrite Storage bucket metadata returned HTTP " + bucketResponse.status +
+      "; bucket visibility may require a server API key.");
+  }
 } catch (error) {
   console.warn("Appwrite API smoke check could not complete: " + error.message);
 }
