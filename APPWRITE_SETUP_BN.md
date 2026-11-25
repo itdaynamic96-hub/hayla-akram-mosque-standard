@@ -18,16 +18,12 @@
 - Table permission: Any = Read; Mosque 20 Admins Team = Create, Read, Update, Delete।
 - Row Security বর্তমানে OFF রাখা হয়েছে, যাতে এই table-level permission-গুলো কার্যকর থাকে।
 
-## এখন Appwrite Console-এ একবার যা করতে হবে
+## Web Platform ও Appwrite সংযোগ — যাচাই সফল
 
-1. Appwrite Console-এ `shayla-akram-mosque-20` প্রজেক্ট খুলুন।
-2. Settings → Platforms-এ যান।
-3. Add platform → Web নির্বাচন করুন।
-4. Name দিন: `Mosque 20 GitHub Pages`
-5. Hostname/Domain দিন: `itdaynamic96-hub.github.io`
-   - এখানে `https://` দেবেন না।
-   - শেষে `/hayla-akram-mosque-standard/` path দেবেন না।
-6. Save করুন। আগে থেকে থাকা `localhost` platform মুছবেন না।
+- Web Platform-এর GitHub Pages hostname `itdaynamic96-hub.github.io` Appwrite CORS response-এ অনুমোদিত হিসেবে পাওয়া গেছে।
+- GitHub Actions-এর বিনামূল্যের API smoke test-এ TablesDB endpoint থেকে HTTP 200 এবং ৩টি public row পাওয়া গেছে।
+- CORS response-এ `https://itdaynamic96-hub.github.io` origin নিশ্চিত হয়েছে।
+- তাই Web Platform যোগ করার অতিরিক্ত Console কাজ আপাতত বাকি নেই। আগে থেকে থাকা `localhost` platform মুছবেন না।
 
 ## Admin login
 
