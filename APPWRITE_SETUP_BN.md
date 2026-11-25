@@ -51,6 +51,12 @@
 
 নামাজের সময়, মসজিদের ইতিহাস, যোগাযোগের ঠিকানা বা কমিটির নামের মতো তথ্য যাচাই না করে লিখবেন না।
 
+## Free Plan-এ ৮ MB ছবি ও ৫০ MB ভিডিও
+
+Appwrite Cloud-এর Free Plan-এ একক ফাইলের সর্বোচ্চ সীমা ৫০ MB; তাই ৫০ MB পর্যন্ত MP4/WebM এবং ৮ MB পর্যন্ত ছবি এই পরিকল্পনার সঙ্গে সামঞ্জস্যপূর্ণ। Free Plan-এ প্রতি Project-এ ১টি Storage Bucket, মোট ২ GB Storage এবং ৫ GB Bandwidth থাকে। এই প্রকল্পে একটি Bucket ব্যবহার করা হচ্ছে; Storage ও Bandwidth ব্যবহার নিয়মিত Usage পৃষ্ঠা থেকে দেখবেন। সীমা অতিক্রম করলে আপলোড/সার্ভিস সাময়িকভাবে বন্ধ হতে পারে—পেইড প্ল্যানে আপগ্রেড না করে পরবর্তী billing period বা usage কমানোর পথ বেছে নিন।
+
+**Console-এ নিশ্চিত করুন:** `mosque20_media` Bucket → Settings → Maximum file size = `50 MB`; allowed extensions = `jpg,jpeg,png,webp,gif,mp4,webm`।
+
 ## নিরাপত্তা
 
 - Browser code বা GitHub-এ Appwrite API Key, secret বা password দেবেন না।
