@@ -6,7 +6,7 @@ const get = (key) => {
   if (!match) throw new Error("Missing Appwrite config key: " + key);
   return match[1];
 };
-const endpoint = get("endpoint").replace(/\\/$/, "");
+const endpoint = get("endpoint").replace(/\/$/, "");
 const projectId = get("projectId");
 const databaseId = get("databaseId");
 const tableId = get("tableId");
