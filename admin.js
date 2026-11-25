@@ -1,3 +1,4 @@
+import { validateMediaFile } from "./media-helpers.js";
 const cfg=window.MOSQUE_APPWRITE_CONFIG||{};
 const MODULES=[
 "হোমপেজ","মসজিদের পরিচিতি","মসজিদের ইতিহাস","নামাজের সময়সূচি","আজানের সময়সূচি","জুমার নামাজের সময়","ইমাম ও খতিব পরিচিতি","পরিচালনা কমিটি","নোটিশ বোর্ড","অনুষ্ঠানসূচি","ফটো গ্যালারি","ভিডিও গ্যালারি","জুমার খুতবা আর্কাইভ","ফাউন্ডেশন পরিচিতি","লক্ষ্য ও উদ্দেশ্য","দরিদ্র পরিবার সহায়তা","এতিম সহায়তা","শিক্ষাবৃত্তি ব্যবস্থাপনা","চিকিৎসা সহায়তা","দুর্যোগ ও ত্রাণ কার্যক্রম"
@@ -79,10 +80,7 @@ async function uploadMedia(n,data){
   const input=$("field-"+f.key),existing=JSON.parse(input.dataset.existing||"[]"),files=[...(input.files||[])],uploaded=[];
   if(files.length&&!cfg.storageBucketId)throw new Error("Appwrite Storage Bucket ID কনফিগার করা হয়নি।");
   for(const file of files){
-   const isVideo=f.type==="video",limit=isVideo?50*1024*1024:8*1024*1024;
-   const allowed=isVideo?["video/mp4","video/webm"]:["image/jpeg","image/png","image/webp","image/gif"];
-   if(!allowed.includes(file.type))throw new Error(isVideo?"শুধু MP4 বা WebM ভিডিও আপলোড করুন: "+file.name:"শুধু JPG, PNG, WebP বা GIF ছবি আপলোড করুন: "+file.name);
-   if(file.size>limit)throw new Error((isVideo?"প্রতি ভিডিওর সর্বোচ্চ আকার ৫০ MB: ":"প্রতি ছবির সর্বোচ্চ আকার ৮ MB: ")+file.name);
+   validateMediaFile(file,f.type);
    const result=await storage.createFile({bucketId:cfg.storageBucketId,fileId:sdk.ID.unique(),file,permissions:[sdk.Permission.read(sdk.Role.any())]});
    uploaded.push({fileId:result.$id,name:result.name,mimeType:result.mimeType,size:result.sizeOriginal});
   }
