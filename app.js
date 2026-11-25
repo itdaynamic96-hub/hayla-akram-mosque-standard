@@ -15,6 +15,7 @@ function card(parent,icon,title,description,href){const a=document.createElement
 
 const moduleNames=["হোমপেজ","মসজিদের পরিচিতি","মসজিদের ইতিহাস","নামাজের সময়সূচি","আজানের সময়সূচি","জুমার নামাজের সময়","ইমাম ও খতিব পরিচিতি","পরিচালনা কমিটি","নোটিশ বোর্ড","অনুষ্ঠানসূচি","ফটো গ্যালারি","ভিডিও গ্যালারি","জুমার খুতবা আর্কাইভ","ফাউন্ডেশন পরিচিতি","লক্ষ্য ও উদ্দেশ্য","দরিদ্র পরিবার সহায়তা","এতিম সহায়তা","শিক্ষাবৃত্তি ব্যবস্থাপনা","চিকিৎসা সহায়তা","দুর্যোগ ও ত্রাণ কার্যক্রম"];
 const fieldNames={intro:"পরিচিতি",summary:"সারসংক্ষেপ",details:"বিস্তারিত",effectiveDate:"কার্যকর তারিখ",fajr:"ফজর",sunrise:"সূর্যোদয়",dhuhr:"যোহর",asr:"আসর",maghrib:"মাগরিব",isha:"এশা",subject:"বিষয়",noticeDate:"তারিখ",noticeBody:"বিজ্ঞপ্তি",deadline:"শেষ তারিখ",eventName:"অনুষ্ঠান",eventDate:"তারিখ",startTime:"শুরুর সময়",venue:"স্থান",eventDetails:"বিবরণ",albumTitle:"অ্যালবাম",photoDate:"ছবির তারিখ",photoCaption:"বিবরণ",videoTitle:"ভিডিও",videoDate:"ভিডিওর তারিখ",videoDescription:"বিবরণ",mission:"পরিচিতি",vision:"লক্ষ্য",objectives:"উদ্দেশ্য",principles:"নীতিমালা",programmeName:"কর্মসূচি",eligibility:"যোগ্যতা",applicationSteps:"আবেদনের ধাপ",supportTypes:"সহায়তার ধরন",scholarshipName:"বৃত্তির নাম",amount:"সহায়তার পরিমাণ",medicalProgramme:"চিকিৎসা কর্মসূচি",coveredTreatment:"চিকিৎসার ধরন",reliefCampaign:"ত্রাণ কর্মসূচি",reliefItems:"ত্রাণসামগ্রী",affectedArea:"ক্ষতিগ্রস্ত এলাকা",personName:"নাম",role:"দায়িত্ব",phone:"যোগাযোগ"};
+import {appendYouTubeEmbed} from "./media-helpers.js";
 function appendFeedValue(host,label,value){
  const line=document.createElement("p");line.className="published-field";const b=document.createElement("b");b.textContent=label+": ";line.append(b);
  if(/^https?:\/\//i.test(value)){const a=document.createElement("a");a.href=value;a.target="_blank";a.rel="noopener noreferrer";a.textContent="লিংক দেখুন";line.append(a)}else line.append(document.createTextNode(value));
@@ -64,6 +65,7 @@ async function loadPublishedFeed(db,storage,cfg,Query){
     if(Array.isArray(value)){if(value.every(x=>x&&x.fileId))continue;const txt=value.filter(x=>typeof x==="string").join(", ");if(txt){appendFeedValue(article,fieldNames[key]||key,txt);fields++}continue}
     if(typeof value==="string"||typeof value==="number"||typeof value==="boolean"){appendFeedValue(article,fieldNames[key]||key,String(value));fields++}
    }
+   if(typeof d.videoUrl==="string"&&d.videoUrl.trim())appendYouTubeEmbed(article,d.videoUrl);
    const media=Object.values(d).flat().filter(x=>x&&x.fileId&&x.mimeType);
    for(const file of media){
     try{const url=storage.getFileView({bucketId:cfg.storageBucketId,fileId:file.fileId});
