@@ -42,7 +42,7 @@ A separate 20-module mosque and foundation website.
 ## Appwrite setup status
 
 - The separate Appwrite Project, Database, Table, columns, Admin Team, admin membership, table permissions, and public client configuration have been created.
-- The remaining Console step is to add the GitHub Pages hostname `itdaynamic96-hub.github.io` as a Web platform.
+- The GitHub Pages hostname `itdaynamic96-hub.github.io` is already registered as an Appwrite Web platform and was verified by the public API/CORS smoke test.
 - No real prayer times, historical facts, contact details, or other factual mosque content have been invented.
 - See [APPWRITE_SETUP_BN.md](APPWRITE_SETUP_BN.md) for the current state and the one remaining Console step.
 - Direct image and video uploads are supported by the admin code. Configure the existing `mosque20_media` Storage bucket for a 50 MB maximum and allow `jpg,jpeg,png,webp,gif,mp4,webm`; the admin code separately limits images to 8 MB and videos to 50 MB. See `APPWRITE_SETUP_BN.md`.
