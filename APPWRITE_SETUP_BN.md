@@ -73,13 +73,13 @@ Appwrite Cloud-এর Free Plan-এ একক ফাইলের সর্বো
 
 1. Appwrite Console-এ `shayla-akram-mosque-20` প্রজেক্ট খুলুন।
 2. বাম পাশের **Build → Storage** খুলুন।
-3. **Create bucket** চাপুন।
-4. Bucket ID হুবহু দিন: `mosque20_media`
-5. Bucket name দিন: `Mosque 20 Public Media`
+3. `mosque20_media` Bucket আগে থেকেই থাকলে নতুন Bucket তৈরি করবেন না। না থাকলে **Create bucket** চাপুন।
+4. নতুন Bucket তৈরি করলে ID হুবহু দিন: `mosque20_media`
+5. নতুন Bucket তৈরি করলে name দিন: `Mosque 20 Public Media`
 6. File Security চালু রাখুন (যদি অপশনটি থাকে)।
 7. **Settings**-এ গিয়ে Maximum file size **50 MB** করুন। অনুমোদিত file extensions দিন: `jpg,jpeg,png,webp,gif,mp4,webm`।
 8. Bucket permissions-এ `Mosque 20 Admins` Team-কে Create, Read, Update, Delete দিন। `Any`-কে Create/Update/Delete দেবেন না।
-9. Bucket ইতিমধ্যে তৈরি করা হয়েছে। Security-তে File level security চালু এবং `Mosque 20 Admins` Team-কে Create, Read, Update, Delete দেওয়া হয়েছে। আপলোড করা প্রতিটি মিডিয়া ফাইলে Public Read permission দেওয়া হবে, যাতে ওয়েবসাইটের দর্শক দেখতে পারেন। সাধারণ দর্শকদের Bucket-level Create permission দেবেন না। ব্যক্তিগত আবেদনপত্র বা পরিচয়পত্র এখানে আপলোড করবেন না।
+9. এই প্রকল্পে Bucket ID `mosque20_media` ইতিমধ্যে তৈরি এবং Security-তে File level security চালু; `Mosque 20 Admins` Team-কে Create, Read, Update, Delete দেওয়া হয়েছে। Bucket-এর বর্তমান Maximum file size 50 MB কি না Console-এ যাচাই করুন। আপলোড করা প্রতিটি মিডিয়া ফাইলে Public Read permission দেওয়া হবে, যাতে ওয়েবসাইটের দর্শক দেখতে পারেন। সাধারণ দর্শকদের Bucket-level Create permission দেবেন না। ব্যক্তিগত আবেদনপত্র বা পরিচয়পত্র এখানে আপলোড করবেন না।
 
 **নিরাপত্তা:** এই Storage bucket শুধু প্রকাশযোগ্য ওয়েবসাইটের ছবি/পোস্টারের জন্য। দরিদ্র পরিবার, এতিম, শিক্ষার্থী বা রোগীর ব্যক্তিগত নথির জন্য আলাদা private storage ও database permission লাগবে।
 
